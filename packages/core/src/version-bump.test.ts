@@ -20,7 +20,10 @@ test('VersionBump#getVersionsForUpdates()', async t => {
     ['last', { version: '3.4.3' }]
   ]);
   const superGetVersionForUpdates = sinon
-    .stub(VersionCommand.prototype, 'getVersionsForUpdates')
+    .stub<
+      { readonly getVersionsForUpdates: () => Promise<Map<string, string>> },
+      'getVersionsForUpdates'
+    >(VersionCommand.prototype, 'getVersionsForUpdates' as any)
     .returns(Promise.resolve(versionMap));
 
   const bump = new VersionBump({}, packageName);
