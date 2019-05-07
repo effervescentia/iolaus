@@ -63,7 +63,7 @@
   "ava": {
     "failFast": true,
     "files": [
-      "build/main/**/*.spec.js"
+      "build/main/**/*.test.js"
     ],
     "sources": [
       "build/main/**/*.js"
@@ -79,7 +79,7 @@
   },
   "nyc": {
     "exclude": [
-      "**/*.spec.js"
+      "**/*.test.js"
     ]
   }
 }

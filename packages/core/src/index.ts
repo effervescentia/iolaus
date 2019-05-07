@@ -1,8 +1,9 @@
 // tslint:disable:no-class no-this no-implicit-dependencies
 import { getPackages } from '@lerna/project';
-import { VersionCommand } from '@lerna/version';
 // import * as debug from 'debug';
 import _semanticRelease, { GlobalConfig } from 'semantic-release';
+
+import VersionBump from './version-bump';
 
 // debug.enable('semantic-release:*');
 
@@ -16,28 +17,6 @@ const semanticRelease: (
 
 const COMMIT_NAME = 'iolaus-bot';
 const COMMIT_EMAIL = 'bot@iolaus.com';
-
-class VersionBump extends VersionCommand {
-  private readonly packageGraph: any;
-
-  constructor(argv: any, private pkgName: string) {
-    // tslint:disable-next-line:no-expression-statement
-    super(argv);
-  }
-
-  public getVersionsForUpdates(): Promise<Map<string, string>> {
-    return super.getVersionsForUpdates().then(versions => {
-      // tslint:disable-next-line:no-expression-statement
-      versions.forEach(
-        (_, key: string) =>
-          key !== this.pkgName &&
-          versions.set(key, this.packageGraph.get(key).version)
-      );
-
-      return versions;
-    });
-  }
-}
 
 export default async () => {
   try {
