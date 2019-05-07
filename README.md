@@ -1,4 +1,4 @@
-# Iolaus
+# iolaus
 
 This is an opinionated versioning system built to support large monorepos with independently versioned sub-components.
 
