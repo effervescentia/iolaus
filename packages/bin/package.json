@@ -1,0 +1,12 @@
+{
+  "name": "iolaus",
+  "version": "1.0.0",
+  "description": "An opinionated semantic versioning system for lerna.",
+  "bin": "index.js",
+  "repository": "https://github.com/effervescentia/iolaus.git",
+  "license": "MIT",
+  "keywords": [],
+  "dependencies": {
+    "@iolaus/core": "^1.0.0"
+  }
+}

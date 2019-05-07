@@ -1,5 +1,4 @@
-// tslint:disable:no-class no-this
-// tslint:disable-next-line:no-implicit-dependencies
+// tslint:disable:no-class no-this no-implicit-dependencies
 import { getPackages } from '@lerna/project';
 import { VersionCommand } from '@lerna/version';
 // import * as debug from 'debug';
@@ -52,8 +51,8 @@ export default async () => {
       const result: false | any = await semanticRelease(
         {
           plugins: [
-            ['iolaus-commit-analyzer', { pkgName: name }],
-            ['iolaus-release-notes-generator', { pkgName: name }],
+            ['@iolaus/commit-analyzer', { pkgName: name }],
+            ['@iolaus/release-notes-generator', { pkgName: name }],
             // '@semantic-release/npm',
             '@semantic-release/github'
           ],
