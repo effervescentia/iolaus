@@ -416,6 +416,25 @@
   dependencies:
     arrify "^1.0.1"
 
+"@iolaus/commit-analyzer@file:packages/commit-analyzer":
+  version "1.0.0"
+  dependencies:
+    "@semantic-release/commit-analyzer" "^6.1.0"
+    sha.js "^2.4.11"
+
+"@iolaus/core@file:packages/core":
+  version "1.0.0"
+  dependencies:
+    "@iolaus/commit-analyzer" "file:../../Library/Caches/Yarn/v4/npm-@iolaus-core-1.0.0-56449853-7a4b-4ba9-a7bd-40748f9c253d-1557190068452/node_modules/@iolaus/commit-analyzer"
+    "@iolaus/release-notes-generator" "file:../../Library/Caches/Yarn/v4/npm-@iolaus-core-1.0.0-56449853-7a4b-4ba9-a7bd-40748f9c253d-1557190068452/node_modules/@iolaus/release-notes-generator"
+    env-ci "^3.2.0"
+
+"@iolaus/release-notes-generator@file:packages/release-notes-generator":
+  version "1.0.0"
+  dependencies:
+    "@semantic-release/release-notes-generator" "^7.1.4"
+    sha.js "^2.4.11"
+
 "@lerna/add@3.13.3":
   version "3.13.3"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-3.13.3.tgz#f4c1674839780e458f0426d4f7b6d0a77b9a2ae9"
