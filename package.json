@@ -9,7 +9,8 @@
     "packages/*"
   ],
   "scripts": {
-    "setup": "lerna bootstrap"
+    "setup": "lerna bootstrap && lerna link && lerna run install-peerdeps",
+    "build": "lerna run build"
   },
   "engines": {
     "node": ">=8.9"

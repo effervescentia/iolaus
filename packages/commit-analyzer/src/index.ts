@@ -7,7 +7,8 @@ export function analyzeCommits(
   { commits, ...context }: any
 ): any {
   const filteredCommits = commits.filter(({ body }) => {
-    const matches: readonly string[] = body.match(AFFECTED_PKGS_REGEX);
+    // tslint:disable-next-line:readonly-array
+    const matches: string[] = body.match(AFFECTED_PKGS_REGEX);
 
     return (
       matches &&

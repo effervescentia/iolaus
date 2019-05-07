@@ -48,8 +48,7 @@
     "node": ">=8.9"
   },
   "dependencies": {
-    "@semantic-release/release-notes-generator": "^7.1.4",
-    "sha.js": "^2.4.11"
+    "@semantic-release/release-notes-generator": "^7.1.4"
   },
   "ava": {
     "failFast": true,
