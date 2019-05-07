@@ -6,6 +6,9 @@
   "repository": "https://github.com/effervescentia/iolaus.git",
   "license": "MIT",
   "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@iolaus/core": "^1.0.0"
   }

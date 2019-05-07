@@ -57,6 +57,9 @@
     "@iolaus/release-notes-generator": "^1.0.0",
     "env-ci": "^3.2.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "ava": {
     "failFast": true,
     "files": [

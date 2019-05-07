@@ -50,6 +50,9 @@
   "dependencies": {
     "@semantic-release/commit-analyzer": "^6.1.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "ava": {
     "failFast": true,
     "files": [

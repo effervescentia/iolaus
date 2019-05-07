@@ -50,6 +50,9 @@
   "dependencies": {
     "@semantic-release/release-notes-generator": "^7.1.4"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "ava": {
     "failFast": true,
     "files": [
