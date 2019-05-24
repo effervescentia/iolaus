@@ -11,7 +11,8 @@
   "scripts": {
     "setup": "lerna bootstrap && lerna link && lerna run install-peerdeps",
     "build": "lerna run build",
-    "test": "lerna run test"
+    "test": "lerna run test",
+    "release": "iolaus"
   },
   "engines": {
     "node": ">=8.9"
@@ -24,6 +25,7 @@
     "codecov": "^3.1.0",
     "cz-conventional-changelog": "^2.1.0",
     "gh-pages": "^2.0.1",
+    "iolaus": "^1.0.0",
     "lerna": "^3.13.4",
     "npm-run-all": "^4.1.5",
     "nyc": "^13.1.0",

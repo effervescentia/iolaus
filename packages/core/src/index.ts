@@ -16,7 +16,7 @@ const semanticRelease: (
 ) => Promise<boolean> = _semanticRelease as any;
 
 const COMMIT_NAME = 'iolaus-bot';
-const COMMIT_EMAIL = 'bot@iolaus.com';
+const COMMIT_EMAIL = 'bot@iolaus.io';
 
 export default async () => {
   try {
