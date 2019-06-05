@@ -9,7 +9,7 @@
   "scripts": {
     "describe": "npm-scripts-info",
     "build": "run-s clean build:main",
-    "build:main": "tsc -p tsconfig.json",
+    "build:main": "tsc -p tsconfig.build.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:tslint": "tslint --fix --project .",
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@iolaus/commit-analyzer": "1.0.0",
-    "iolaus/common": "1.0.0",
+    "@iolaus/common": "1.0.0",
     "@iolaus/release-notes-generator": "1.0.0",
     "env-ci": "^3.2.0"
   },
@@ -72,7 +72,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "cz-conventional-changelog"
+      "path": "cz-lerna-changelog"
     }
   },
   "prettier": {

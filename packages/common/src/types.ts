@@ -7,5 +7,6 @@ export interface Commit {
 }
 
 export interface Context {
-  readonly commits: readonly Commit[];
+  // tslint:disable-next-line:readonly-array
+  readonly commits: Commit[];
 }

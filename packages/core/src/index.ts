@@ -3,7 +3,7 @@ import { getPackages } from '@lerna/project';
 // import * as debug from 'debug';
 import _semanticRelease, { GlobalConfig } from 'semantic-release';
 
-import VersionBump from './version-bump';
+// import VersionBump from './version-bump';
 
 // debug.enable('semantic-release:*');
 
@@ -16,7 +16,7 @@ const semanticRelease: (
 ) => Promise<boolean> = _semanticRelease as any;
 
 const COMMIT_NAME = 'iolaus-bot';
-const COMMIT_EMAIL = 'bot@iolaus.com';
+const COMMIT_EMAIL = 'bot@iolaus.effervescentia.com';
 
 export default async () => {
   try {
@@ -53,20 +53,20 @@ export default async () => {
         } = result;
 
         // tslint:disable-next-line:no-expression-statement no-unused-expression
-        new VersionBump(
-          {
-            amend: false,
-            bump: version,
-            changelog: false,
-            composed: 'iolaus',
-            gitTagVersion: false,
-            push: false,
-            scope: name,
-            tagVersionPrefix: `${name}-v`,
-            yes: true
-          },
-          name
-        );
+        // new VersionBump(
+        //   {
+        //     amend: false,
+        //     bump: version,
+        //     changelog: false,
+        //     composed: 'iolaus',
+        //     gitTagVersion: false,
+        //     push: false,
+        //     scope: name,
+        //     tagVersionPrefix: `${name}-v`,
+        //     yes: true
+        //   },
+        //   name
+        // );
       }
     }
   } catch (e) {
