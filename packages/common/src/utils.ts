@@ -1,6 +1,6 @@
 import { Commit } from './types';
 
-const AFFECTED_PKGS_REGEX = /affects: (.*)[\r\n]/;
+const AFFECTED_PKGS_REGEX = /\baffects: ([^, ]*(?:,[\r\n ][^, ]*)*)/m;
 
 export function commitFilter(pkgName: string): (commit: Commit) => boolean {
   return ({ body }) => {

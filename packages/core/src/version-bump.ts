@@ -23,3 +23,21 @@ export default class VersionBump extends VersionCommand {
     });
   }
 }
+
+export function bumpVersions(pkgName: string, version: string): void {
+  // tslint:disable-next-line:no-expression-statement no-unused-expression
+  new VersionBump(
+    {
+      amend: false,
+      bump: version,
+      changelog: false,
+      composed: 'iolaus',
+      gitTagVersion: false,
+      push: false,
+      scope: pkgName,
+      tagVersionPrefix: `${pkgName}-v`,
+      yes: true
+    },
+    pkgName
+  );
+}
