@@ -10,6 +10,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@iolaus/core": "^1.0.0"
+    "@iolaus/core": "1.0.0"
   }
 }

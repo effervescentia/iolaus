@@ -1,14 +1,14 @@
 {
-  "name": "@iolaus/release-notes-generator",
+  "name": "@iolaus/common",
   "version": "1.0.0",
-  "description": "Release notes generator for iolaus formatted commits",
+  "description": "An opinionated semantic versioning system for lerna.",
   "main": "build/main/index.js",
-  "repository": "https://github.com/effervescentia/iolaus",
+  "repository": "https://github.com/effervescentia/iolaus.git",
   "license": "MIT",
   "keywords": [],
   "scripts": {
     "describe": "npm-scripts-info",
-    "build": "run-s clean && run-p build:*",
+    "build": "run-s clean build:main",
     "build:main": "tsc -p tsconfig.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
@@ -29,7 +29,8 @@
     "reset": "git clean -dfx && git reset --hard && npm i",
     "clean": "trash build test",
     "all": "run-s reset test cov:check doc:html",
-    "prepare-release": "run-s all version doc:publish"
+    "prepare-release": "run-s all version doc:publish",
+    "install-peerdeps": "install-self-peers"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
@@ -46,12 +47,6 @@
   },
   "engines": {
     "node": ">=8.9"
-  },
-  "peerDependencies": {
-    "@iolaus/common": "1.0.0"
-  },
-  "dependencies": {
-    "@semantic-release/release-notes-generator": "^7.1.4"
   },
   "publishConfig": {
     "access": "public"

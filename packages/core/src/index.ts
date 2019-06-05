@@ -31,9 +31,9 @@ export default async () => {
         {
           plugins: [
             ['@iolaus/commit-analyzer', { pkgName: name }],
-            ['@iolaus/release-notes-generator', { pkgName: name }],
+            ['@iolaus/release-notes-generator', { pkgName: name }]
             // '@semantic-release/npm',
-            '@semantic-release/github'
+            // '@semantic-release/github'
           ],
           tagFormat: `${name}-v\${version}`
         } as any,

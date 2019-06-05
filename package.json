@@ -20,7 +20,7 @@
     "@team-griffin/install-self-peers": "^1.1.1",
     "@types/semantic-release": "^15.13.0",
     "@types/sinon": "^7.0.11",
-    "ava": "1.0.0-beta.7",
+    "ava": "1.4.1",
     "codecov": "^3.1.0",
     "cz-conventional-changelog": "^2.1.0",
     "gh-pages": "^2.0.1",

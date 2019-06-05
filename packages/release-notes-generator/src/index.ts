@@ -1,24 +1,11 @@
+import { commitFilter, Context, PluginConfig } from '@iolaus/common';
 import { generateNotes as _generateNotes } from '@semantic-release/release-notes-generator';
 
-const AFFECTED_PKGS_REGEX = /affects: (.*)[\r\n]/;
-
 export function generateNotes(
-  { pkgName, ...pluginConfig }: any,
-  { commits, ...context }: any
+  { pkgName, ...pluginConfig }: PluginConfig,
+  { commits, ...context }: Context
 ): any {
-  const filteredCommits = commits.filter(({ body }) => {
-    // tslint:disable-next-line:readonly-array
-    const matches: string[] = body.match(AFFECTED_PKGS_REGEX);
-
-    return (
-      matches &&
-      matches.length > 1 &&
-      matches[1]
-        .split(',')
-        .map(s => s.trim())
-        .includes(pkgName)
-    );
-  });
+  const filteredCommits = commits.filter(commitFilter(pkgName));
 
   return _generateNotes(pluginConfig, {
     ...context,
