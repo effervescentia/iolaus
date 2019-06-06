@@ -1,7 +1,8 @@
 // tslint:disable:no-implicit-dependencies no-submodule-imports
-import { BaseContext } from '@iolaus/common';
-import PackageGraph, { PackageGraphNode } from '@lerna/package-graph';
+import { BaseContext, NewVersion } from '@iolaus/common';
+import PackageGraph from '@lerna/package-graph';
 import prepareChangelog from '@semantic-release/changelog/lib/prepare';
+import publishRelease from '@semantic-release/github/lib/publish';
 import path from 'path';
 import _semanticRelease, { GlobalConfig } from 'semantic-release';
 import { ReleaseType } from 'semver';
@@ -31,18 +32,21 @@ type SemanticRelease = (
 ) => Promise<false | ReleaseResult>;
 
 const semanticRelease: SemanticRelease = _semanticRelease as any;
-const git = simpleGit(process.cwd());
+const cwd = process.cwd();
+const git = simpleGit();
 
 const COMMIT_NAME = 'iolaus-bot';
 const COMMIT_EMAIL = 'bot@iolaus.effervescentia.com';
 
 export async function recordReleases(
   pkgName: string,
+  pkgInfo: object,
   packageUpdates: Map<string, PackageUpdate>,
   packageGraph: PackageGraph
 ): Promise<void> {
   const result = await semanticRelease(
     {
+      // TODO: remove
       branch: 'f/release',
       dryRun: true,
       plugins: [['@iolaus/commit-analyzer', { pkgName }]]
@@ -64,6 +68,7 @@ export async function recordReleases(
   const initial = !lastRelease.version;
 
   packageUpdates.set(pkgName, {
+    info: pkgInfo,
     initial,
     node: packageGraph.get(pkgName),
     type: initial
@@ -73,10 +78,13 @@ export async function recordReleases(
 }
 
 export async function updateChangelogs(
-  { name: pkgName, location, localDependencies }: PackageGraphNode,
-  initial: boolean,
-  bump: ReleaseType,
-  packageUpdates: Map<string, string>
+  {
+    initial,
+    info,
+    type: bump,
+    node: { name: pkgName, location, localDependencies }
+  }: PackageUpdate,
+  newVersions: Map<string, NewVersion>
 ): Promise<void> {
   const changelogFile = path.resolve(location, 'CHANGELOG.md');
   const env = {
@@ -87,6 +95,7 @@ export async function updateChangelogs(
 
   const result = await semanticRelease(
     {
+      // TODO: remove
       branch: 'f/release',
       dryRun: true,
       plugins: [
@@ -96,7 +105,7 @@ export async function updateChangelogs(
           {
             dependencyUpdates: initial
               ? []
-              : Array.from(packageUpdates.entries()).filter(([key]) =>
+              : Array.from(newVersions.entries()).filter(([key]) =>
                   localDependencies.has(key)
                 ),
             pkgName
@@ -116,17 +125,27 @@ export async function updateChangelogs(
   await prepareChangelog(
     { changelogFile },
     {
-      cwd: process.cwd(),
+      cwd,
       logger: console,
       nextRelease: result.nextRelease
     }
   );
 
+  const repositoryUrl =
+    typeof info.repository === 'object' ? info.repository.url : info.repository;
+
+  newVersions.set(pkgName, {
+    ...newVersions.get(pkgName),
+    gitTag: result.nextRelease.gitTag,
+    notes: result.nextRelease.notes,
+    repositoryUrl
+  });
+
   await git.add(changelogFile);
 }
 
 export async function createReleases(
-  newVersions: Map<string, string>
+  newVersions: Map<string, NewVersion>
 ): Promise<void> {
   await git.commit(
     `chore(release): release updates to packages\n\n${Array.from(
@@ -135,4 +154,22 @@ export async function createReleases(
       .map(([key, version]) => `* **${key}** -> v${version}`)
       .join('\n')}`
   );
+
+  for (const { gitTag, notes, repositoryUrl } of newVersions.values()) {
+    publishRelease(
+      {},
+      {
+        cwd,
+        logger: console,
+        nextRelease: {
+          gitTag,
+          notes
+        },
+        options: {
+          branch: 'master',
+          repositoryUrl
+        }
+      }
+    );
+  }
 }

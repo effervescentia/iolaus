@@ -26,5 +26,6 @@ export interface Release {
 export interface PackageUpdate {
   readonly initial: boolean;
   readonly node: PackageGraphNode;
+  readonly info: { readonly repository?: string | { readonly url?: string } };
   readonly type: ReleaseType;
 }

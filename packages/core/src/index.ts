@@ -1,4 +1,5 @@
 // tslint:disable:no-class no-this no-implicit-dependencies
+import { NewVersion } from '@iolaus/common';
 import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
 import semver from 'semver';
@@ -17,8 +18,9 @@ export default async () => {
     const packageGraph = new PackageGraph(packages);
     const packageUpdates = new Map<string, PackageUpdate>();
 
-    for (const { name } of packages) {
-      await recordReleases(name, packageUpdates, packageGraph);
+    for (const { name, ...pkg } of packages) {
+      const pkgInfo = pkg[Object.getOwnPropertySymbols(pkg)[0]];
+      await recordReleases(name, pkgInfo, packageUpdates, packageGraph);
     }
 
     if (packageUpdates.size === 0) {
@@ -36,18 +38,16 @@ export default async () => {
         ([key, { type, node, initial }]) =>
           [
             key,
-            initial ? node.version : semver.inc(node.version, type)
+            {
+              version: initial ? node.version : semver.inc(node.version, type)
+            }
             // tslint:disable-next-line:readonly-array
-          ] as [string, string]
+          ] as [string, NewVersion]
       )
     );
 
-    Array.from(packageUpdates.entries()).forEach(([pkgKey, value]) =>
-      console.log(pkgKey, value.type)
-    );
-
-    for (const { type, node, initial } of packageUpdates.values()) {
-      await updateChangelogs(node, initial, type, newVersions);
+    for (const pkg of packageUpdates.values()) {
+      await updateChangelogs(pkg, newVersions);
     }
 
     await createReleases(newVersions);

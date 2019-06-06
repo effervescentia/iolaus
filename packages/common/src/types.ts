@@ -6,6 +6,13 @@ export interface Commit {
   readonly body: string;
 }
 
+export interface NewVersion {
+  readonly version: string;
+  readonly gitTag?: string;
+  readonly notes?: string;
+  readonly repositoryUrl?: string;
+}
+
 export interface BaseContext {
   readonly cwd?: string;
   readonly env?: Record<string, string>;
@@ -16,6 +23,7 @@ export interface Context extends BaseContext {
   // tslint:disable-next-line:readonly-array
   readonly commits: Commit[];
   readonly nextRelease: {
+    readonly gitTag: string;
     readonly notes: string;
   };
 }
