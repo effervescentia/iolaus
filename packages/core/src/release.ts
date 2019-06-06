@@ -17,12 +17,8 @@ interface SemanticConfig extends GlobalConfig {
 }
 
 export interface ReleaseResult {
-  readonly lastRelease: {
-    readonly version?: string;
-  };
-  readonly nextRelease: {
-    readonly version: string;
-  };
+  readonly lastRelease: Partial<Release>;
+  readonly nextRelease: Release;
   // tslint:disable-next-line:readonly-array
   readonly commits: Readonly<Commit[]>;
   // tslint:disable-next-line:readonly-array
@@ -97,8 +93,8 @@ export async function updateChangelogs(
         [
           '@iolaus/release-notes-generator',
           {
-            dependencyUpdates: Array.from(packageUpdates.entries()).filter(
-              ([key]) => localDependencies.has(key)
+            dependencyUpdates: Array.from(packageUpdates.keys()).filter(key =>
+              localDependencies.has(key)
             ),
             pkgName
           }
