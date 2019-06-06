@@ -64,7 +64,7 @@ export async function recordReleases(
     // tslint:disable-next-line:no-expression-statement
     packageUpdates.set(pkgName, {
       initial,
-      ...(initial && {
+      ...(!initial && {
         type: semverDiff(lastRelease.version, version) as ReleaseType
       })
     });
