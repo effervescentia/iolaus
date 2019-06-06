@@ -3,7 +3,7 @@ import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
 import semver from 'semver';
 
-import { performRelease, recordReleases } from './release';
+import { recordReleases, updateChangelogs } from './release';
 import { PackageUpdate } from './types';
 import updateDependents from './update-dependents';
 
@@ -18,44 +18,36 @@ export default async () => {
     const packageUpdates = new Map<string, PackageUpdate>();
 
     for (const { name } of packages) {
-      // tslint:disable-next-line:no-expression-statement
-      await recordReleases(
-        name,
-        // packageGraph.get(name).location,
-        packageUpdates
-      );
+      await recordReleases(name, packageUpdates, packageGraph);
     }
 
-    // tslint:disable-next-line:no-if-statement
     if (packageUpdates.size === 0) {
-      console.log('no packages to update!');
+      // tslint:disable-next-line:no-console
+      console.error('no packages to update!');
       return;
     }
 
-    // tslint:disable-next-line:no-expression-statement
     Array.from(packageUpdates.keys()).forEach(key =>
-      updateDependents(key, packageUpdates, packageGraph)
+      updateDependents(key, packageUpdates)
     );
 
     const newVersions = new Map(
       Array.from(packageUpdates.entries()).map(
-        ([key, { type }]) =>
+        ([key, { type, node }]) =>
           [
             key,
-            semver.inc(packageGraph.get(key).version, type)
+            semver.inc(node.version, type)
             // tslint:disable-next-line:readonly-array
           ] as [string, string]
       )
     );
 
-    // tslint:disable-next-line:no-expression-statement
     Array.from(packageUpdates.entries()).forEach(([pkgKey, value]) =>
       console.log(pkgKey, value.type)
     );
 
-    // tslint:disable-next-line:no-expression-statement
-    packageUpdates.forEach(({ type }, key) =>
-      performRelease(packageGraph.get(key), type, newVersions)
+    packageUpdates.forEach(({ type, node }) =>
+      updateChangelogs(node, type, newVersions)
     );
   } catch (e) {
     // tslint:disable-next-line:no-console

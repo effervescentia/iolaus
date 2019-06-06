@@ -62,7 +62,8 @@
     "jsup": "^0.0.1",
     "pkg-up": "^3.1.0",
     "semver": "^6.1.1",
-    "semver-diff": "^3.1.0"
+    "semver-diff": "^3.1.0",
+    "simple-git": "^1.113.0"
   },
   "publishConfig": {
     "access": "public"

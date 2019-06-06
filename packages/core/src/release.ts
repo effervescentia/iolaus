@@ -1,15 +1,19 @@
-// tslint:disable:no-implicit-dependencies
-import { PackageGraphNode } from '@lerna/package-graph';
+// tslint:disable:no-implicit-dependencies no-submodule-imports
+import { BaseContext } from '@iolaus/common';
+import PackageGraph, { PackageGraphNode } from '@lerna/package-graph';
+import prepareChangelog from '@semantic-release/changelog/lib/prepare';
 import path from 'path';
 import _semanticRelease, { GlobalConfig } from 'semantic-release';
 import { ReleaseType } from 'semver';
 import semverDiff from 'semver-diff';
+import simpleGit from 'simple-git/promise';
 
 import { Commit, PackageUpdate, Release } from './types';
 
 interface SemanticConfig extends GlobalConfig {
+  readonly dryRun?: boolean;
   // tslint:disable-next-line:readonly-array
-  readonly plugins: ReadonlyArray<string | [string, object]>;
+  readonly plugins?: ReadonlyArray<string | [string, object]>;
 }
 
 export interface ReleaseResult {
@@ -27,24 +31,24 @@ export interface ReleaseResult {
 
 type SemanticRelease = (
   opts?: Partial<SemanticConfig>,
-  context?: {
-    readonly cwd?: string;
-    readonly env?: Record<string, string>;
-  }
+  context?: BaseContext
 ) => Promise<false | ReleaseResult>;
 
 const semanticRelease: SemanticRelease = _semanticRelease as any;
+const git = simpleGit();
 
 const COMMIT_NAME = 'iolaus-bot';
 const COMMIT_EMAIL = 'bot@iolaus.effervescentia.com';
 
 export async function recordReleases(
   pkgName: string,
-  packageUpdates: Map<string, PackageUpdate>
+  packageUpdates: Map<string, PackageUpdate>,
+  packageGraph: PackageGraph
 ): Promise<void> {
   const result = await semanticRelease(
     {
       branch: 'f/release',
+      dryRun: true,
       plugins: [['@iolaus/commit-analyzer', { pkgName }]]
     },
     {
@@ -52,34 +56,42 @@ export async function recordReleases(
     }
   );
 
-  // tslint:disable-next-line:no-if-statement
-  if (result) {
-    const {
-      lastRelease,
-      nextRelease: { version }
-    } = result;
-
-    const initial = !lastRelease.version;
-
-    // tslint:disable-next-line:no-expression-statement
-    packageUpdates.set(pkgName, {
-      initial,
-      ...(!initial && {
-        type: semverDiff(lastRelease.version, version) as ReleaseType
-      })
-    });
+  if (!result) {
+    return;
   }
+
+  const {
+    lastRelease,
+    nextRelease: { version }
+  } = result;
+
+  const initial = !lastRelease.version;
+
+  packageUpdates.set(pkgName, {
+    initial,
+    node: packageGraph.get(pkgName),
+    type: initial
+      ? 'patch'
+      : (semverDiff(lastRelease.version, version) as ReleaseType)
+  });
 }
 
-export async function performRelease(
+export async function updateChangelogs(
   { name: pkgName, location, localDependencies }: PackageGraphNode,
   bump: ReleaseType,
   packageUpdates: Map<string, string>
 ): Promise<void> {
-  // tslint:disable-next-line:no-expression-statement
-  await semanticRelease(
+  const changelogFile = path.resolve(location, 'CHANGELOG.md');
+  const env = {
+    ...process.env,
+    COMMIT_EMAIL,
+    COMMIT_NAME
+  };
+
+  const result = await semanticRelease(
     {
       branch: 'f/release',
+      dryRun: true,
       plugins: [
         ['@iolaus/commit-analyzer', { force: bump }],
         [
@@ -91,23 +103,25 @@ export async function performRelease(
             pkgName
           }
         ],
-        [
-          '@semantic-release/changelog',
-          {
-            changelogFile: path.resolve(location, 'CHANGELOG.md')
-          }
-        ]
-        // '@semantic-release/npm',
-        // '@semantic-release/github'
+        ['@semantic-release/changelog', { changelogFile }]
       ],
       tagFormat: `${pkgName}-v\${version}`
     },
+    { env }
+  );
+
+  if (!result) {
+    return;
+  }
+
+  await prepareChangelog(
+    { changelogFile },
     {
-      env: {
-        ...process.env,
-        COMMIT_EMAIL,
-        COMMIT_NAME
-      }
+      cwd: process.cwd(),
+      logger: console,
+      nextRelease: result.nextRelease
     }
   );
+
+  await git.add(changelogFile);
 }

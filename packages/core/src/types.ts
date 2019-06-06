@@ -1,3 +1,5 @@
+// tslint:disable:no-implicit-dependencies
+import { PackageGraphNode } from '@lerna/package-graph';
 import { ReleaseType } from 'semver';
 
 export interface Commit {
@@ -23,5 +25,6 @@ export interface Release {
 
 export interface PackageUpdate {
   readonly initial: boolean;
-  readonly type?: ReleaseType;
+  readonly node: PackageGraphNode;
+  readonly type: ReleaseType;
 }
