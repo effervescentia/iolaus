@@ -93,8 +93,8 @@ export async function updateChangelogs(
         [
           '@iolaus/release-notes-generator',
           {
-            dependencyUpdates: Array.from(packageUpdates.keys()).filter(key =>
-              localDependencies.has(key)
+            dependencyUpdates: Array.from(packageUpdates.entries()).filter(
+              ([key]) => localDependencies.has(key)
             ),
             pkgName
           }
@@ -129,7 +129,7 @@ export async function createReleases(
     `chore(release): release updates to packages\n\n${Array.from(
       newVersions.entries()
     )
-      .map(([key, version]) => `update *${key}* -> *v${version}*`)
+      .map(([key, version]) => `* **${key}** -> v${version}`)
       .join('\n')}`
   );
 }
