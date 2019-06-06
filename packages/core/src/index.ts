@@ -46,8 +46,8 @@ export default async () => {
       console.log(pkgKey, value.type)
     );
 
-    packageUpdates.forEach(({ type, node }) =>
-      updateChangelogs(node, type, newVersions)
+    packageUpdates.forEach(({ type, node, initial }) =>
+      updateChangelogs(node, initial, type, newVersions)
     );
 
     // await createReleases(newVersions);

@@ -6,6 +6,7 @@ import {
 import * as ReleaseNotesGenerator from '@semantic-release/release-notes-generator';
 
 interface PluginConfig extends BaseConfig {
+  readonly initial: boolean;
   // tslint:disable-next-line:readonly-array array-type
   readonly dependencyUpdates: Readonly<[string, string][]>;
 }
@@ -23,10 +24,7 @@ export async function generateNotes(
 
   return dependencyUpdates.length === 0
     ? notes
-    : `${notes.slice(
-        0,
-        -2
-      )}\n### Dependencies* deps: bump ${dependencyUpdates
+    : `${notes.slice(0, -2)}\n### Dependencies\n\n${dependencyUpdates
         .map(([key, version]) => `* **${key}** -> v${version}`)
         .join('\n')}\n\n\n`;
 }

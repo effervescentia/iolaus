@@ -74,6 +74,7 @@ export async function recordReleases(
 
 export async function updateChangelogs(
   { name: pkgName, location, localDependencies }: PackageGraphNode,
+  initial: boolean,
   bump: ReleaseType,
   packageUpdates: Map<string, string>
 ): Promise<void> {
@@ -93,9 +94,11 @@ export async function updateChangelogs(
         [
           '@iolaus/release-notes-generator',
           {
-            dependencyUpdates: Array.from(packageUpdates.entries()).filter(
-              ([key]) => localDependencies.has(key)
-            ),
+            dependencyUpdates: initial
+              ? []
+              : Array.from(packageUpdates.entries()).filter(([key]) =>
+                  localDependencies.has(key)
+                ),
             pkgName
           }
         ],
