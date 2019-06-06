@@ -31,7 +31,7 @@ type SemanticRelease = (
 ) => Promise<false | ReleaseResult>;
 
 const semanticRelease: SemanticRelease = _semanticRelease as any;
-const git = simpleGit();
+const git = simpleGit(process.cwd());
 
 const COMMIT_NAME = 'iolaus-bot';
 const COMMIT_EMAIL = 'bot@iolaus.effervescentia.com';

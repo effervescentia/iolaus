@@ -3,7 +3,7 @@ import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
 import semver from 'semver';
 
-import { recordReleases, updateChangelogs } from './release';
+import { createReleases, recordReleases, updateChangelogs } from './release';
 import { PackageUpdate } from './types';
 import updateDependents from './update-dependents';
 
@@ -50,7 +50,7 @@ export default async () => {
       updateChangelogs(node, initial, type, newVersions)
     );
 
-    // await createReleases(newVersions);
+    await createReleases(newVersions);
   } catch (e) {
     // tslint:disable-next-line:no-console
     console.error('failed', e);
