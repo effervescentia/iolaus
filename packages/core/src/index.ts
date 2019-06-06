@@ -3,7 +3,7 @@ import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
 import semver from 'semver';
 
-import { recordReleases, updateChangelogs } from './release';
+import { createReleases, recordReleases, updateChangelogs } from './release';
 import { PackageUpdate } from './types';
 import updateDependents from './update-dependents';
 
@@ -33,10 +33,10 @@ export default async () => {
 
     const newVersions = new Map(
       Array.from(packageUpdates.entries()).map(
-        ([key, { type, node }]) =>
+        ([key, { type, node, initial }]) =>
           [
             key,
-            semver.inc(node.version, type)
+            initial ? node.version : semver.inc(node.version, type)
             // tslint:disable-next-line:readonly-array
           ] as [string, string]
       )
@@ -49,6 +49,8 @@ export default async () => {
     packageUpdates.forEach(({ type, node }) =>
       updateChangelogs(node, type, newVersions)
     );
+
+    await createReleases(newVersions);
   } catch (e) {
     // tslint:disable-next-line:no-console
     console.error('failed', e);

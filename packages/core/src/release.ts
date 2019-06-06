@@ -121,3 +121,15 @@ export async function updateChangelogs(
 
   await git.add(changelogFile);
 }
+
+export async function createReleases(
+  newVersions: Map<string, string>
+): Promise<void> {
+  await git.commit(
+    `chore(release): release updates to packages\n\n${Array.from(
+      newVersions.entries()
+    )
+      .map(([key, version]) => `update *${key}* -> *v${version}*`)
+      .join('\n')}`
+  );
+}

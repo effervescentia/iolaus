@@ -10,18 +10,20 @@ interface PluginConfig extends BaseConfig {
   readonly dependencyUpdates: Readonly<string[]>;
 }
 
-export function generateNotes(
+export async function generateNotes(
   { pkgName, dependencyUpdates, ...pluginConfig }: PluginConfig,
   { commits, ...context }: Context
-): any {
+): Promise<any> {
   const filteredCommits = commits.filter(commitFilter(pkgName));
 
-  const notes = ReleaseNotesGenerator.generateNotes(pluginConfig, {
+  const notes = await ReleaseNotesGenerator.generateNotes(pluginConfig, {
     ...context,
     commits: filteredCommits
   });
 
-  return `${notes.slice(0, -6)}chore(deps): bump ${dependencyUpdates.join(
-    ', '
-  )}\n\n\n\n`;
+  return dependencyUpdates.length === 0
+    ? notes
+    : `${notes.slice(0, -2)}* chore(deps): bump ${dependencyUpdates.join(
+        ', '
+      )}\n\n\n`;
 }
