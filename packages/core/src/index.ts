@@ -26,7 +26,11 @@ export default async () => {
 
     const packages = await getPackages();
 
-    for (const { name } of packages) {
+    for (const { name, ...pkg } of packages) {
+      const pkgSymbol = Object.getOwnPropertySymbols(pkg)[0];
+      const pkgInfo = pkg[pkgSymbol];
+      console.log('pkg:', pkgInfo);
+
       const result: false | any = await semanticRelease(
         {
           plugins: [
@@ -52,6 +56,7 @@ export default async () => {
           nextRelease: { version }
         } = result;
 
+        console.log(name, version);
         // tslint:disable-next-line:no-expression-statement
         bumpVersions(name, version);
       }

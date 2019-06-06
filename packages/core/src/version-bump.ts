@@ -22,6 +22,20 @@ export default class VersionBump extends VersionCommand {
       return versions;
     });
   }
+
+  public setUpdatesForVersions(): void {
+    // do nothing
+  }
+
+  public setBatchUpdates(): void {
+    // do nothing
+  }
+
+  // tslint:disable-next-line:readonly-array
+  public confirmVersions(): Promise<number> {
+    // do nothing
+    return Promise.resolve(0);
+  }
 }
 
 export function bumpVersions(pkgName: string, version: string): void {
