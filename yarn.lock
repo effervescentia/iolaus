@@ -1109,7 +1109,7 @@
     npm-package-arg "^6.1.0"
     semver "^5.5.0"
 
-"@lerna/package-graph@3.14.0":
+"@lerna/package-graph@3.14.0", "@lerna/package-graph@^3.14.0":
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/@lerna/package-graph/-/package-graph-3.14.0.tgz#4ccdf446dccedfbbeb4efff3eb720cb6fcb109fc"
   integrity sha512-dNpA/64STD5YXhaSlg4gT6Z474WPJVCHoX1ibsVIFu0fVgH609Y69bsdmbvTRdI7r6Dcu4ZfGxdR636RTrH+Eg==
@@ -3557,9 +3557,9 @@ end-of-stream@^1.0.0, end-of-stream@^1.1.0:
     once "^1.4.0"
 
 env-ci@^3.0.0:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/env-ci/-/env-ci-3.2.1.tgz#61573eb1bfaeadd2972dd73342f55d6f21e88429"
-  integrity sha512-nKc3FHIr037exA3Dn8HDLeQLTb0d0zrg2KeDj3p/NmD4ADHq5L/yKS3fBBr1MxUQX0gXZAxvGk1k6/OwMdTtFA==
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/env-ci/-/env-ci-3.2.2.tgz#06936f1fcfbc999102a2211fc2539df64062b61f"
+  integrity sha512-AOiNZ3lmxrtva3r/roqaYDF+1PX2V+ouUzuGqJf7KNxyyYkuU+CsfFbbUeibQPdixxjI/lP6eDtvtkX1/wymJw==
   dependencies:
     execa "^1.0.0"
     java-properties "^1.0.0"

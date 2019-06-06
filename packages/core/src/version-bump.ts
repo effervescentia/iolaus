@@ -1,42 +1,41 @@
-// tslint:disable:no-class no-this no-implicit-dependencies
-import { VersionCommand } from '@lerna/version';
+// tslint:disable:no-class no-this no-implicit-dependencies no-expression-statement
+import { Options, VersionCommand } from '@lerna/version';
 
-export default class VersionBump extends VersionCommand {
-  // tslint:disable-next-line:readonly-keyword
-  private packageGraph: any;
-
-  constructor(argv: any, public pkgName: string) {
-    // tslint:disable-next-line:no-expression-statement
+class VersionBump extends VersionCommand {
+  constructor(argv: Options, public pkgName: string) {
     super(argv);
   }
 
-  public getVersionsForUpdates(): Promise<Map<string, string>> {
-    return super.getVersionsForUpdates().then(versions => {
-      // tslint:disable-next-line:no-expression-statement
-      versions.forEach(
-        (_, key: string) =>
-          key !== this.pkgName &&
-          versions.set(key, this.packageGraph.get(key).version)
-      );
+  public async getVersionsForUpdates(): Promise<Map<string, string>> {
+    const versions = await super.getVersionsForUpdates();
 
-      return versions;
-    });
+    versions.forEach(
+      (_, key: string) =>
+        key !== this.pkgName &&
+        versions.set(key, this.packageGraph.get(key).version)
+    );
+
+    return versions;
   }
 
   public setUpdatesForVersions(): void {
-    // do nothing
-  }
+    console.log(
+      'updates',
+      this.updates.map(pkg =>
+        Object.getOwnPropertyNames(pkg).reduce((acc, key) => {
+          acc[key] = pkg[key];
 
-  public setBatchUpdates(): void {
-    // do nothing
-  }
-
-  // tslint:disable-next-line:readonly-array
-  public confirmVersions(): Promise<number> {
-    // do nothing
-    return Promise.resolve(0);
+          return acc;
+        }, {})
+      )
+    );
+    this.updates = [];
+    this.updatesVersions = new Map();
+    this.packagesToVersion = [];
   }
 }
+
+export default VersionBump;
 
 export function bumpVersions(pkgName: string, version: string): void {
   // tslint:disable-next-line:no-expression-statement no-unused-expression
