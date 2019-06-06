@@ -4,7 +4,8 @@
     "outDir": "build/main"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules/**"

@@ -1,13 +1,26 @@
-import { commitFilter, Context, PluginConfig } from '@iolaus/common';
-import { analyzeCommits as _analyzeCommits } from '@semantic-release/commit-analyzer';
+import {
+  commitFilter,
+  Context,
+  PluginConfig as BaseConfig
+} from '@iolaus/common';
+import * as CommitAnalyzer from '@semantic-release/commit-analyzer';
+
+export interface PluginConfig extends BaseConfig {
+  readonly force?: string;
+}
 
 export function analyzeCommits(
-  { pkgName, ...pluginConfig }: PluginConfig,
+  { pkgName, force, ...pluginConfig }: PluginConfig,
   { commits, ...context }: Context
 ): any {
+  // tslint:disable-next-line:no-if-statement
+  if (force) {
+    return force;
+  }
+
   const filteredCommits = commits.filter(commitFilter(pkgName));
 
-  return _analyzeCommits(pluginConfig, {
+  return CommitAnalyzer.analyzeCommits(pluginConfig, {
     ...context,
     commits: filteredCommits
   });

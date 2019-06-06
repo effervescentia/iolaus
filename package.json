@@ -9,11 +9,12 @@
     "packages/*"
   ],
   "scripts": {
-    "setup": "lerna bootstrap && lerna link && lerna run install-peerdeps",
+    "setup": "lerna bootstrap",
     "build": "run-s build:common build:rest",
     "build:common": "lerna run --scope=@iolaus/common build",
     "build:rest": "lerna run --ignore=@iolaus/common build",
     "test": "lerna run test",
+    "prepare": "lerna link && lerna run install-peerdeps",
     "release": "node packages/bin/index.js"
   },
   "engines": {

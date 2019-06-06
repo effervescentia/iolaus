@@ -1,5 +1,5 @@
 import { commitFilter, Context, PluginConfig } from '@iolaus/common';
-import { generateNotes as _generateNotes } from '@semantic-release/release-notes-generator';
+import * as ReleaseNotesGenerator from '@semantic-release/release-notes-generator';
 
 export function generateNotes(
   { pkgName, ...pluginConfig }: PluginConfig,
@@ -7,7 +7,7 @@ export function generateNotes(
 ): any {
   const filteredCommits = commits.filter(commitFilter(pkgName));
 
-  return _generateNotes(pluginConfig, {
+  return ReleaseNotesGenerator.generateNotes(pluginConfig, {
     ...context,
     commits: filteredCommits
   });
