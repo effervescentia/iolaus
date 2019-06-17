@@ -2,6 +2,7 @@
 import { NewVersion } from '@iolaus/common';
 import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
+import debug from 'debug';
 import semver from 'semver';
 
 import { createReleases, recordReleases, updateChangelogs } from './release';
@@ -9,6 +10,8 @@ import { PackageUpdate } from './types';
 import updateDependents from './update-dependents';
 
 export default async () => {
+  debug.disable('semantic-release:*');
+
   try {
     // const cwd = process.cwd();
     // const env = process.env;
