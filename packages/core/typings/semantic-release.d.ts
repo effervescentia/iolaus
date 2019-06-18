@@ -108,9 +108,17 @@ declare module 'semantic-release/lib/plugins' {
 }
 
 declare module 'semantic-release/lib/get-last-release' {
-  import { Context } from 'semantic-release';
+  import { Context, Release } from 'semantic-release';
 
-  function getLastRelease(context: Context): Promise<any>;
+  function getLastRelease(context: Context): Promise<Release>;
 
   export = getLastRelease;
+}
+
+declare module 'semantic-release/lib/get-commits' {
+  import { Commit, Context } from 'semantic-release';
+
+  function getCommits(context: Context): Promise<Commit[]>;
+
+  export = getCommits;
 }

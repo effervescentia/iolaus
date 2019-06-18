@@ -3,17 +3,18 @@ import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
 import path from 'path';
 import semanticRelease, {
-  Configuration,
-  NextRelease,
-  Plugins
+  Configuration
+  // Context
+  // NextRelease,
+  // Plugins
 } from 'semantic-release';
-import { ReleaseType } from 'semver';
+// import { ReleaseType } from 'semver';
 import { getConfig, getContext } from './context-sink';
+import { initializeRelease } from './release';
 import { PackageContext } from './types';
 import {
-  createPackageContext,
-  extendOptions,
-  trackUpdates,
+  // trackUpdates,
+  transformOptions,
   transformPlugins
 } from './utils';
 
@@ -21,19 +22,19 @@ const DEFAULT_CONFIG: Configuration = {
   branch: 'master'
 };
 
-function promisifyPlugin<T = void>(
-  plugin: keyof Plugins,
-  packageNames: string[],
-  packageContexts: Map<string, PackageContext>
-): Promise<T[]> {
-  return Promise.all<T>(
-    packageNames.map(pkgName => {
-      const { context, plugins } = packageContexts.get(pkgName);
+// function promisifyPlugin<T = void>(
+//   plugin: keyof Plugins,
+//   packageNames: string[],
+//   packageContexts: Map<string, PackageContext>
+// ): Promise<T[]> {
+//   return Promise.all<T>(
+//     packageNames.map(pkgName => {
+//       const { context, plugins } = packageContexts.get(pkgName);
 
-      return plugins[plugin](context) as Promise<any>;
-    })
-  );
-}
+//       return plugins[plugin](context) as Promise<any>;
+//     })
+//   );
+// }
 
 export default async (userConfig: Configuration) => {
   const config = {
@@ -49,17 +50,18 @@ export default async (userConfig: Configuration) => {
     await semanticRelease(
       {
         ...config,
-        // TODO: remove
-        branch: 'f/release',
         dryRun: true,
-        plugins: [[path.resolve(__dirname, 'context-sink'), { packages }]]
+        plugins: [path.resolve(__dirname, 'context-sink')]
       },
       {
         env: process.env
       } as any
     );
 
-    const hijackedContext = extendOptions(getContext(), getConfig());
+    const hijackedContext = transformOptions(getContext(), () => ({
+      ...getConfig(),
+      ...config
+    }));
 
     const rootContext = transformPlugins(hijackedContext, () => [
       '@semantic-release/commit-analyzer',
@@ -69,58 +71,52 @@ export default async (userConfig: Configuration) => {
     const packageContexts = new Map<string, PackageContext>();
 
     for (const pkgName of packageNames) {
-      const pkgContext = await createPackageContext(pkgName, rootContext);
-      const { context } = pkgContext;
-
-      await pkgContext.plugins.verifyConditions(context);
-
-      // tslint:disable-next-line: no-object-mutation
-      context.lastRelease = null;
-      // tslint:disable-next-line: no-object-mutation
-      context.commits = null;
-
-      packageContexts.set(pkgName, pkgContext);
+      await initializeRelease(pkgName, rootContext, packageContexts);
     }
 
-    const packageUpdates = new Map<string, ReleaseType>();
+    // packageContexts.forEach((pkgContext, pkgName) =>
+    //   console.log(pkgName, pkgContext.context)
+    // );
 
-    for (const pkgName of packageNames) {
-      await trackUpdates(pkgName, graph, packageContexts, packageUpdates);
-    }
+    // const packageUpdates = new Map<string, ReleaseType>();
 
-    const updatedNames = Array.from(packageUpdates.keys());
+    // for (const pkgName of packageNames) {
+    //   await trackUpdates(pkgName, graph, packageContexts, packageUpdates);
+    // }
 
-    for (const pkgName of updatedNames) {
-      const type = packageUpdates.get(pkgName);
-      const { context, plugins } = packageContexts.get(pkgName);
+    // const updatedNames = Array.from(packageUpdates.keys());
 
-      // tslint:disable-next-line: no-object-mutation no-object-literal-type-assertion
-      context.nextRelease = { type } as NextRelease;
+    // for (const pkgName of updatedNames) {
+    //   const type = packageUpdates.get(pkgName);
+    //   const { context, plugins } = packageContexts.get(pkgName);
 
-      await plugins.verifyRelease(context);
+    //   // tslint:disable-next-line: no-object-mutation no-object-literal-type-assertion
+    //   context.nextRelease = { type } as NextRelease;
 
-      // tslint:disable-next-line: no-object-mutation
-      context.nextRelease.notes = null;
-    }
+    //   await plugins.verifyRelease(context);
 
-    await promisifyPlugin('prepare', updatedNames, packageContexts);
+    //   // tslint:disable-next-line: no-object-mutation
+    //   context.nextRelease.notes = null;
+    // }
 
-    // TODO: create git tags
+    // await promisifyPlugin('prepare', updatedNames, packageContexts);
 
-    try {
-      for (const pkgName of updatedNames) {
-        const { context, plugins } = packageContexts.get(pkgName);
+    // // TODO: create git tags
 
-        const releases = await plugins.publish(context);
+    // try {
+    //   for (const pkgName of updatedNames) {
+    //     const { context, plugins } = packageContexts.get(pkgName);
 
-        // tslint:disable-next-line: no-object-mutation
-        context.releases = releases;
-      }
+    //     const releases = await plugins.publish(context);
 
-      await promisifyPlugin('success', updatedNames, packageContexts);
-    } catch (err) {
-      await promisifyPlugin('fail', updatedNames, packageContexts);
-    }
+    //     // tslint:disable-next-line: no-object-mutation
+    //     context.releases = releases;
+    //   }
+
+    //   await promisifyPlugin('success', updatedNames, packageContexts);
+    // } catch (err) {
+    //   await promisifyPlugin('fail', updatedNames, packageContexts);
+    // }
 
     /**
      * STEPS:

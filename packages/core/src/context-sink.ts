@@ -18,7 +18,7 @@ export const getContext = () => getSink().context;
 export const getConfig = () => getSink().config;
 
 export function verifyConditions(
-  config: Configuration,
+  { dryRun, plugins, ...config }: Configuration,
   context: Context
 ): void {
   // tslint:disable-next-line: no-object-mutation

@@ -1,6 +1,6 @@
 // tslint:disable:no-implicit-dependencies no-submodule-imports
 import PackageGraph from '@lerna/package-graph';
-import { Context, PluginArray } from 'semantic-release';
+import { Configuration, Context, PluginArray } from 'semantic-release';
 import getSemanticPlugins from 'semantic-release/lib/plugins';
 import { ReleaseType } from 'semver';
 import simpleGit from 'simple-git/promise';
@@ -8,13 +8,13 @@ import { PackageContext } from './types';
 
 export const git = simpleGit();
 
-export function extendOptions(context: Context, options: object): Context {
+export function transformOptions(
+  context: Context,
+  transform: (options: Configuration) => Configuration
+): Context {
   return {
     ...context,
-    options: {
-      ...context.options,
-      ...options
-    }
+    options: transform(context.options)
   };
 }
 
@@ -22,9 +22,10 @@ export function transformPlugins(
   context: Context,
   transform: (plugins: PluginArray) => PluginArray
 ): Context {
-  return extendOptions(context, {
+  return transformOptions(context, options => ({
+    ...options,
     plugins: transform(context.options.plugins)
-  });
+  }));
 }
 
 export function maxSemver(lhs: ReleaseType, rhs: ReleaseType): ReleaseType {
@@ -71,9 +72,14 @@ export async function createPackageContext(
   pkgName: string,
   baseContext: Context
 ): Promise<PackageContext> {
-  const context = transformPlugins({ ...baseContext }, basePlugins => [
-    ...basePlugins.filter(() => true)
-  ]);
+  const context = transformPlugins(
+    transformOptions(baseContext, options => ({
+      ...options,
+      tagFormat: `${pkgName}-${options.tagFormat}`
+    })),
+    // TODO: filter out base plugins that are re-declared in the child to preserve intended order
+    basePlugins => [...basePlugins.filter(() => true)]
+  );
   const plugins = await getSemanticPlugins(context, {});
 
   return { context, plugins };
