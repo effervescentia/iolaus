@@ -4,8 +4,7 @@ const AFFECTED_PKGS_REGEX = /\baffects: ([^, ]*(?:,[\r\n ][^, ]*)*)/m;
 
 export function commitFilter(pkgName: string): (commit: Commit) => boolean {
   return ({ body }) => {
-    // tslint:disable-next-line:readonly-array
-    const matches: string[] = body.match(AFFECTED_PKGS_REGEX);
+    const matches = body.match(AFFECTED_PKGS_REGEX);
 
     return (
       matches &&

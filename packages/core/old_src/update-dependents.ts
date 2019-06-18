@@ -2,7 +2,6 @@ import { ReleaseType } from 'semver';
 
 import { PackageUpdate } from './types';
 
-// tslint:disable-next-line:readonly-array
 const RELEASE_TYPES: ReleaseType[] = [
   'prerelease',
   'prepatch',

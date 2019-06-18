@@ -2,7 +2,7 @@
   "name": "@iolaus/core",
   "version": "1.0.0",
   "description": "An opinionated semantic versioning system for lerna.",
-  "main": "build/main/index.js",
+  "main": "build/main/index2.js",
   "repository": "https://github.com/effervescentia/iolaus.git",
   "license": "MIT",
   "keywords": [],

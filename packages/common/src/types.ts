@@ -20,7 +20,6 @@ export interface BaseContext {
 }
 
 export interface Context extends BaseContext {
-  // tslint:disable-next-line:readonly-array
   readonly commits: Commit[];
   readonly nextRelease: {
     readonly gitTag: string;

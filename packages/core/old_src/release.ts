@@ -9,21 +9,18 @@ import { ReleaseType } from 'semver';
 import semverDiff from 'semver-diff';
 import simpleGit from 'simple-git/promise';
 
-import { Commit, PackageUpdate, Release } from './types';
+import { Commit, PackageUpdate, Release } from '../src/types';
 
 interface SemanticConfig extends GlobalConfig {
   readonly dryRun?: boolean;
-  // tslint:disable-next-line:readonly-array
-  readonly plugins?: ReadonlyArray<string | [string, object]>;
+  readonly plugins?: Array<string | [string, object]>;
 }
 
 export interface ReleaseResult {
   readonly lastRelease: Partial<Release>;
   readonly nextRelease: Release;
-  // tslint:disable-next-line:readonly-array
-  readonly commits: Readonly<Commit[]>;
-  // tslint:disable-next-line:readonly-array
-  readonly releases: Readonly<Release[]>;
+  readonly commits: Commit[];
+  readonly releases: Release[];
 }
 
 type SemanticRelease = (

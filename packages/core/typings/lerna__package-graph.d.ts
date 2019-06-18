@@ -14,8 +14,7 @@ declare module '@lerna/package-graph' {
   }
 
   class PackageGraph extends Map<string, PackageGraph.PackageGraphNode> {
-    // tslint:disable-next-line readonly-array
-    constructor(packages: Readonly<Package[]>);
+    constructor(packages: Package[]);
   }
 
   export = PackageGraph;

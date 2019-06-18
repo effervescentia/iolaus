@@ -7,8 +7,7 @@ import * as ReleaseNotesGenerator from '@semantic-release/release-notes-generato
 
 interface PluginConfig extends BaseConfig {
   readonly initial: boolean;
-  // tslint:disable-next-line:readonly-array array-type
-  readonly dependencyUpdates: Readonly<[string, string][]>;
+  readonly dependencyUpdates: Array<[string, string]>;
 }
 
 export async function generateNotes(

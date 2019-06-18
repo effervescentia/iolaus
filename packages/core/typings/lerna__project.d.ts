@@ -3,6 +3,5 @@ declare module '@lerna/project' {
     readonly name: string;
   }
 
-  // tslint:disable-next-line
-  export function getPackages(): Readonly<Package[]>;
+  export function getPackages(): Package[];
 }
