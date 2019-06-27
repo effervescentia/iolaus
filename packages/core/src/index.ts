@@ -8,15 +8,11 @@ import semanticRelease, {
   // NextRelease,
   // Plugins
 } from 'semantic-release';
-// import { ReleaseType } from 'semver';
+import { ReleaseType } from 'semver';
 import { getConfig, getContext } from './context-sink';
 import { initializeRelease } from './release';
 import { PackageContext } from './types';
-import {
-  // trackUpdates,
-  transformOptions,
-  transformPlugins
-} from './utils';
+import { trackUpdates, transformOptions, transformPlugins } from './utils';
 
 const DEFAULT_CONFIG: Configuration = {
   branch: 'master'
@@ -41,6 +37,7 @@ export default async (userConfig: Configuration) => {
     ...DEFAULT_CONFIG,
     ...userConfig
   };
+  const cwd = process.cwd();
 
   try {
     const packages = await getPackages();
@@ -71,19 +68,22 @@ export default async (userConfig: Configuration) => {
     const packageContexts = new Map<string, PackageContext>();
 
     for (const pkgName of packageNames) {
-      await initializeRelease(pkgName, rootContext, packageContexts);
+      await initializeRelease(
+        pkgName,
+        cwd,
+        graph.get(pkgName).location,
+        rootContext,
+        packageContexts
+      );
     }
 
-    // packageContexts.forEach((pkgContext, pkgName) =>
-    //   console.log(pkgName, pkgContext.context)
-    // );
+    const packageUpdates = new Map<string, ReleaseType>();
 
-    // const packageUpdates = new Map<string, ReleaseType>();
+    for (const pkgName of packageNames) {
+      await trackUpdates(pkgName, graph, packageContexts, packageUpdates);
+    }
 
-    // for (const pkgName of packageNames) {
-    //   await trackUpdates(pkgName, graph, packageContexts, packageUpdates);
-    // }
-
+    console.log(packageUpdates);
     // const updatedNames = Array.from(packageUpdates.keys());
 
     // for (const pkgName of updatedNames) {

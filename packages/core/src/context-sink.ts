@@ -29,30 +29,6 @@ export function verifyConditions(
   };
 }
 
-// export function analyzeCommits() {
-//   console.log('analyzing commits!');
-// }
-
-// export function verifyRelease() {
-//   console.log('verifying release!');
-// }
-
-// export function generateNotes() {
-//   console.log('generating notes!');
-// }
-
-// export function prepare() {
-//   console.log('preparing!');
-// }
-
-// export function publish() {
-//   console.log('publishing!');
-// }
-
-// export function success() {
-//   console.log('success!');
-// }
-
-// export function fail() {
-//   console.log('success!');
-// }
+export function analyzeCommits(): null {
+  return null;
+}
