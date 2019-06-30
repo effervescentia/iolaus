@@ -47,10 +47,21 @@ declare module 'semantic-release' {
     /** The semantic release configuration itself. */
     readonly options?: Configuration;
     /** The shared logger instance of semantic release. */
-    readonly logger: {
-      readonly log: (message: string, ...vars: any[]) => void;
-      readonly error: (message: string, ...vars: any[]) => void;
-    };
+    readonly logger: Record<
+      | 'await'
+      | 'complete'
+      | 'log'
+      | 'error'
+      | 'pending'
+      | 'star'
+      | 'start'
+      | 'info'
+      | 'success'
+      | 'note'
+      | 'warn'
+      | 'watch',
+      (message: string, ...vars: any[]) => void
+    >;
     /** Working directory of running the release */
     readonly cwd?: string;
     /** Environment variables. */
@@ -75,7 +86,7 @@ declare module 'semantic-release' {
   export interface Plugins {
     readonly verifyConditions: Plugin;
     readonly analyzeCommits: Plugin<ReleaseType>;
-    readonly generateNotes: Plugin;
+    readonly generateNotes: Plugin<string>;
     readonly verifyRelease: Plugin;
     readonly prepare: Plugin;
     readonly publish: Plugin;

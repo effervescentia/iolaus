@@ -12,7 +12,7 @@ export async function initializeRelease(
   rootContext: Context,
   packageContexts: Map<string, PackageContext>
 ): Promise<void> {
-  rootContext.logger.log(`initializing package: "${pkgName}"`);
+  rootContext.logger.info(`initializing package: "${pkgName}"`);
 
   const pkgContext = await createPackageContext(
     pkgName,
@@ -26,6 +26,9 @@ export async function initializeRelease(
 
   // tslint:disable: no-object-mutation
   if (pkgContext.pkg.private) {
+    rootContext.logger.note(
+      `skipping package "${pkgName}" because it is set as private`
+    );
     // tslint:disable-next-line: no-object-literal-type-assertion
     context.lastRelease = {} as Release;
     context.commits = [];

@@ -1,4 +1,5 @@
 import { Configuration, Context } from 'semantic-release';
+import { Signale } from 'signale';
 import { Sink } from './types';
 
 // tslint:disable-next-line: no-let
@@ -21,12 +22,14 @@ export function verifyConditions(
   { dryRun, plugins, ...config }: Configuration,
   context: Context
 ): void {
-  // tslint:disable-next-line: no-object-mutation
+  // tslint:disable: no-object-mutation
+  (context as any).logger = new Signale({ scope: 'iolaus' });
   GLOBAL_SINK = {
     config,
     context,
     initialized: true
   };
+  // tslint:enable: no-object-mutation
 }
 
 export function analyzeCommits(): null {
