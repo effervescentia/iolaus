@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "build/main"
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "typings/**/*.d.ts", "old_src/release.ts", "old_src/index.ts"],
   "exclude": ["node_modules/**"]
 }

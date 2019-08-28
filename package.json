@@ -9,24 +9,27 @@
     "packages/*"
   ],
   "scripts": {
-    "setup": "lerna bootstrap && lerna link && lerna run install-peerdeps",
+    "setup": "lerna bootstrap",
     "build": "run-s build:common build:rest",
-    "build:common": "lerna run --scope=@iolaus/common build",
-    "build:rest": "lerna run --ignore=@iolaus/common build",
+    "build:common": "lerna run build --scope=@iolaus/common",
+    "build:rest": "lerna run build --ignore=@iolaus/common",
     "test": "lerna run test",
-    "release": "node packages/bin/index.js"
+    "prepare": "lerna link && lerna run install-peerdeps",
+    "release": "node packages/bin/index.js",
+    "commit": "git cz"
   },
   "engines": {
     "node": ">=8.9"
   },
   "devDependencies": {
     "@team-griffin/install-self-peers": "^1.1.1",
-    "@types/semantic-release": "^15.13.0",
     "@types/sinon": "^7.0.11",
     "ava": "1.4.1",
     "codecov": "^3.1.0",
+    "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^2.1.0",
     "cz-lerna-changelog": "^2.0.2",
+    "debug": "^4.1.1",
     "gh-pages": "^2.0.1",
     "lerna": "^3.13.4",
     "npm-run-all": "^4.1.5",
