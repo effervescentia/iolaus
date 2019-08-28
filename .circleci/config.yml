@@ -20,6 +20,7 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - run: yarn build
       - run: yarn test
       # - run: npx nyc report --reporter=lcov | npx codecov
       # - run: npm run cov:check
@@ -40,6 +41,7 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - run: yarn build
       - run: yarn test
       # - run: npx nyc report --reporter=lcov | npx codecov
       # - run: npm run cov:check
