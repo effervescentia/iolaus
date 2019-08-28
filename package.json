@@ -13,7 +13,8 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "prepare": "lerna link && lerna run install-peerdeps",
-    "release": "node packages/bin/index.js"
+    "release": "node packages/bin/index.js",
+    "commit": "git cz"
   },
   "engines": {
     "node": ">=8.9"
@@ -23,6 +24,7 @@
     "@types/sinon": "^7.0.11",
     "ava": "1.4.1",
     "codecov": "^3.1.0",
+    "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^2.1.0",
     "cz-lerna-changelog": "^2.0.2",
     "debug": "^4.1.1",
