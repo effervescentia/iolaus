@@ -56,23 +56,10 @@ export default async (userConfig: Configuration) => {
     ...DEFAULT_CONFIG,
     ...userConfig
   };
-  const repositoryUrl = new URL(config.repositoryUrl);
-  // tslint:disable-next-line: no-object-mutation
-  repositoryUrl.username = 'api';
-  // tslint:disable-next-line: no-object-mutation
-  repositoryUrl.password = process.env.GH_TOKEN;
-  const authRepositoryUrl = repositoryUrl.toString();
   const gitReleaseConfig: GitRelease.Config = {
     assets: config.assets
   };
-  const githubReleaseConfig: GithubRelease.Config = {
-    assets: config.releaseAssets,
-    failComment: false,
-    githubUrl: authRepositoryUrl,
-    labels: ['iolaus'],
-    releasedLabels: ['released'],
-    successComment: false
-  };
+
   const cwd = process.cwd();
 
   try {
@@ -87,6 +74,22 @@ export default async (userConfig: Configuration) => {
       '@semantic-release/commit-analyzer',
       '@semantic-release/release-notes-generator'
     ]);
+
+    const repositoryUrl = new URL(rootContext.options.repositoryUrl);
+    // tslint:disable-next-line: no-object-mutation
+    repositoryUrl.username = 'api';
+    // tslint:disable-next-line: no-object-mutation
+    repositoryUrl.password = process.env.GH_TOKEN;
+    const authRepositoryUrl = repositoryUrl.toString();
+
+    const githubReleaseConfig: GithubRelease.Config = {
+      assets: config.releaseAssets,
+      failComment: false,
+      githubUrl: authRepositoryUrl,
+      labels: ['iolaus'],
+      releasedLabels: ['released'],
+      successComment: false
+    };
 
     const packageContexts = new Map<string, PackageContext>();
 
