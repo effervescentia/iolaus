@@ -15,6 +15,7 @@ import semanticRelease, {
 } from 'semantic-release';
 import { getGitHead } from 'semantic-release/lib/git';
 import semver, { ReleaseType } from 'semver';
+import { URL } from 'url';
 import writePkg from 'write-pkg';
 import { generateChangelog } from './changelog';
 import { getConfig, getContext } from './context-sink';
@@ -55,13 +56,19 @@ export default async (userConfig: Configuration) => {
     ...DEFAULT_CONFIG,
     ...userConfig
   };
+  const repositoryUrl = new URL(config.repositoryUrl);
+  // tslint:disable-next-line: no-object-mutation
+  repositoryUrl.username = 'api';
+  // tslint:disable-next-line: no-object-mutation
+  repositoryUrl.password = process.env.GH_TOKEN;
+  const authRepositoryUrl = repositoryUrl.toString();
   const gitReleaseConfig: GitRelease.Config = {
     assets: config.assets
   };
   const githubReleaseConfig: GithubRelease.Config = {
     assets: config.releaseAssets,
     failComment: false,
-    githubUrl: config.repositoryUrl,
+    githubUrl: authRepositoryUrl,
     labels: ['iolaus'],
     releasedLabels: ['released'],
     successComment: false
@@ -201,7 +208,7 @@ export default async (userConfig: Configuration) => {
         )
         .join(', ')}\n\n${changelog}`
     );
-    await git(cwd).push(config.repositoryUrl);
+    await git(cwd).push(authRepositoryUrl);
 
     try {
       for (const pkgName of updatedNames) {
@@ -213,7 +220,7 @@ export default async (userConfig: Configuration) => {
           );
         } else {
           await git(cwd).addTag(context.nextRelease.gitTag);
-          await git(cwd).pushTags(config.repositoryUrl);
+          await git(cwd).pushTags(authRepositoryUrl);
           rootContext.logger.success(
             `Created tag ${context.nextRelease.gitTag}`
           );
