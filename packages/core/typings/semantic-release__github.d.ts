@@ -1,15 +1,31 @@
-declare module '@semantic-release/github/lib/publish' {
-  import { Context } from '@iolaus/common';
+declare module '@semantic-release/github' {
+  import { Context } from 'semantic-release';
 
-  interface Options {
-    readonly branch: string;
-    readonly repositoryUrl: string;
+  export interface Config {
+    readonly githubUrl?: string;
+    readonly githubApiPathPrefix?: string;
+    readonly proxy?: string;
+    readonly successComment?: string | false;
+    readonly failComment?: string | false;
+    readonly failTitle?: string;
+    readonly labels?: string[];
+    readonly releasedLabels?: string[];
+    readonly assignees?: string[];
+    readonly assets?: Array<
+      | string
+      | {
+          readonly path: string;
+          readonly name?: string;
+          readonly label?: string;
+        }
+    >;
   }
 
-  function publish(
-    pluginConfig: object,
-    context: Partial<Context & { readonly options: Options }>
+  function verifyConditions(
+    pluginConfig: Config,
+    context: Context
   ): Promise<void>;
-
-  export = publish;
+  function publish(pluginConfig: Config, context: Context): Promise<void>;
+  function success(pluginConfig: Config, context: Context): Promise<void>;
+  function fail(pluginConfig: Config, context: Context): Promise<void>;
 }

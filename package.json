@@ -10,9 +10,7 @@
   ],
   "scripts": {
     "setup": "lerna bootstrap",
-    "build": "run-s build:common build:rest",
-    "build:common": "lerna run --scope=@iolaus/common build",
-    "build:rest": "lerna run --ignore=@iolaus/common build",
+    "build": "lerna run build",
     "test": "lerna run test",
     "prepare": "lerna link && lerna run install-peerdeps",
     "release": "node packages/bin/index.js"

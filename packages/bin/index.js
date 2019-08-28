@@ -9,8 +9,9 @@ const cfg = cosmiconfig('iolaus');
 async function main() {
   const pkg = await readPkg({ cwd: __dirname });
 
+  commander.version(pkg.version);
+
   commander
-    .version(pkg.version)
     .arguments('[options]')
     .option(
       '-c --config [config file]',
@@ -33,6 +34,13 @@ async function main() {
         console.error(`unable to load file: "${config}"\n\n`, err);
       }
     });
+
+  // commander
+  //   .command('init')
+  //   .description('initialize a new iolaus project')
+  //   .action(() => {
+  //     process.exit(-1);
+  //   });
 
   commander.parse(process.argv);
 }

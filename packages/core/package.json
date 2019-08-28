@@ -53,23 +53,25 @@
     "semantic-release": "^15.13.3"
   },
   "dependencies": {
-    "@iolaus/commit-analyzer": "1.0.0",
     "@iolaus/common": "1.0.0",
-    "@iolaus/release-notes-generator": "1.0.0",
     "@semantic-release/changelog": "^3.0.2",
+    "@semantic-release/commit-analyzer": "^6.3.0",
+    "@semantic-release/git": "^7.0.16",
     "@semantic-release/github": "^5.2.10",
+    "@semantic-release/release-notes-generator": "^7.3.0",
     "@types/cosmiconfig": "^5.0.3",
     "@types/semver": "^6.0.0",
     "@types/signale": "^1.2.1",
     "cosmiconfig": "^5.2.1",
     "env-ci": "^3.2.0",
-    "jsup": "^0.0.1",
+    "lodash.template": "^4.5.0",
     "pkg-up": "^3.1.0",
-    "read-pkg": "^5.1.1",
+    "read-pkg": "^5.2.0",
     "semver": "^6.1.1",
     "semver-diff": "^3.1.0",
     "signale": "^1.4.0",
-    "simple-git": "^1.113.0"
+    "simple-git": "^1.113.0",
+    "write-pkg": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

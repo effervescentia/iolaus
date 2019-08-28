@@ -1,21 +1,39 @@
 // tslint:disable:no-implicit-dependencies
 import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
+import GitRelease from '@semantic-release/git';
+import GithubRelease from '@semantic-release/github';
+import npmPublish from '@semantic-release/npm/lib/publish';
+import fs from 'fs';
+import template from 'lodash.template';
 import path from 'path';
+import readPkg from 'read-pkg';
 import semanticRelease, {
-  Configuration,
   Context,
   NextRelease,
   Plugins
 } from 'semantic-release';
-import { ReleaseType } from 'semver';
+import { getGitHead } from 'semantic-release/lib/git';
+import semver, { ReleaseType } from 'semver';
+import writePkg from 'write-pkg';
+import { generateChangelog } from './changelog';
 import { getConfig, getContext } from './context-sink';
 import { initializeRelease } from './release';
-import { PackageContext } from './types';
-import { trackUpdates, transformOptions, transformPlugins } from './utils';
+import { Configuration, PackageContext } from './types';
+import {
+  applyUpdatesToDependents,
+  git,
+  trackUpdates,
+  transformOptions,
+  transformPlugins
+} from './utils';
 
+const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
 const DEFAULT_CONFIG: Configuration = {
-  branch: 'master'
+  assets: ['packages/*/package.json', 'CHANGELOG.md'],
+  branch: 'master',
+  npmRegistry: '//registry.npmjs.org/',
+  releaseAssets: []
 };
 
 function promisifyPlugin<T = void>(
@@ -37,6 +55,17 @@ export default async (userConfig: Configuration) => {
     ...DEFAULT_CONFIG,
     ...userConfig
   };
+  const gitReleaseConfig: GitRelease.Config = {
+    assets: config.assets
+  };
+  const githubReleaseConfig: GithubRelease.Config = {
+    assets: config.releaseAssets,
+    failComment: false,
+    githubUrl: config.repositoryUrl,
+    labels: ['iolaus'],
+    releasedLabels: ['released'],
+    successComment: false
+  };
   const cwd = process.cwd();
 
   try {
@@ -55,6 +84,9 @@ export default async (userConfig: Configuration) => {
     const packageContexts = new Map<string, PackageContext>();
 
     rootContext.logger.await('verifying packages');
+
+    await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
+    await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
     for (const pkgName of packageNames) {
       await initializeRelease(
         pkgName,
@@ -69,9 +101,16 @@ export default async (userConfig: Configuration) => {
     const packageUpdates = new Map<string, ReleaseType>();
 
     rootContext.logger.await('looking for updates');
-    for (const pkgName of packageNames) {
-      await trackUpdates(pkgName, graph, packageContexts, packageUpdates);
-    }
+
+    await Promise.all(
+      packageNames.map(pkgName =>
+        trackUpdates(pkgName, packageContexts, packageUpdates)
+      )
+    );
+
+    Array.from(packageUpdates.keys()).forEach(pkgName =>
+      applyUpdatesToDependents(pkgName, graph, packageUpdates)
+    );
 
     const updatedNames = Array.from(packageUpdates.keys());
     if (!updatedNames.length) {
@@ -84,82 +123,144 @@ export default async (userConfig: Configuration) => {
       const { context, plugins } = packageContexts.get(pkgName);
 
       // tslint:disable-next-line: no-object-mutation no-object-literal-type-assertion
-      context.nextRelease = { type } as NextRelease;
+      context.nextRelease = {
+        gitHead: await getGitHead(context),
+        type
+      } as NextRelease;
 
       await plugins.verifyRelease(context);
 
-      // tslint:disable-next-line: no-object-mutation
+      // tslint:disable: no-object-mutation
       context.nextRelease.notes = await plugins.generateNotes(context);
 
-      const {
-        // tslint:disable-next-line: variable-name
-        cwd: _cwd,
-        env,
-        options,
-        logger,
-        stdout,
-        stderr,
-        ...ctx
-      } = context as any;
-
-      console.log(pkgName, ctx);
+      const version = context.lastRelease.version
+        ? semver.inc(context.lastRelease.version, type)
+        : '1.0.0';
+      context.nextRelease.version = version;
+      context.nextRelease.gitTag = template(context.options.tagFormat)({
+        version
+      });
+      // tslint:enable: no-object-mutation
     }
 
-    if (config.dryRun) {
-      rootContext.logger.warn('running in dry-run mode, skipping release');
-      return;
-    }
+    await Promise.all(
+      updatedNames.map(async pkgName => {
+        const { localDependencies } = graph.get(pkgName);
+        const { context, location } = packageContexts.get(pkgName);
+        const updatedDependencies = Array.from(localDependencies.keys()).filter(
+          depName => updatedNames.includes(depName)
+        );
+
+        const pkgLocation = path.join(location, 'package.json');
+        const pkgString = await fs.promises.readFile(pkgLocation, 'utf8');
+
+        const pkg = JSON.parse(pkgString);
+
+        // tslint:disable-next-line: no-object-mutation
+        pkg.version = context.nextRelease.version;
+
+        Object.keys(pkg)
+          .filter(key => DEPENDENCY_KEY_PATTERN.test(key))
+          .forEach(pkgKey =>
+            updatedDependencies.forEach(depName => {
+              const pkgDeps = pkg[pkgKey];
+
+              if (
+                depName in pkgDeps &&
+                pkgDeps !== context.nextRelease.version
+              ) {
+                // tslint:disable-next-line: no-object-mutation
+                pkgDeps[depName] = context.nextRelease.version;
+              }
+            })
+          );
+
+        await writePkg(path.join(location, 'package.json'), pkg);
+      })
+    );
+
+    const { file: changelogFile, content: changelog } = await generateChangelog(
+      cwd,
+      graph,
+      packageContexts,
+      updatedNames
+    );
+
+    await fs.promises.writeFile(changelogFile, changelog);
 
     await promisifyPlugin('prepare', updatedNames, packageContexts);
 
-    // // TODO: create git tags
+    await git(cwd).add(gitReleaseConfig.assets);
+    await git(cwd).commit(
+      `chore(release): release packages [skip ci]\n${updatedNames
+        .map(
+          pkgName =>
+            `\n- \`${pkgName}\` -> \`v${
+              packageContexts.get(pkgName).context.nextRelease.version
+            }\``
+        )
+        .join(', ')}\n\n${changelog}`
+    );
+    await git(cwd).push(config.repositoryUrl);
 
-    // try {
-    //   for (const pkgName of updatedNames) {
-    //     const { context, plugins } = packageContexts.get(pkgName);
+    try {
+      for (const pkgName of updatedNames) {
+        const { location, context, plugins } = packageContexts.get(pkgName);
 
-    //     const releases = await plugins.publish(context);
+        if (config.dryRun) {
+          rootContext.logger.warn(
+            `Skip ${context.nextRelease.gitTag} tag creation in dry-run mode`
+          );
+        } else {
+          await git(cwd).addTag(context.nextRelease.gitTag);
+          await git(cwd).pushTags(config.repositoryUrl);
+          rootContext.logger.success(
+            `Created tag ${context.nextRelease.gitTag}`
+          );
+        }
 
-    //     // tslint:disable-next-line: no-object-mutation
-    //     context.releases = releases;
-    //   }
+        const releases = await plugins.publish(context);
 
-    //   await promisifyPlugin('success', updatedNames, packageContexts);
-    // } catch (err) {
-    //   await promisifyPlugin('fail', updatedNames, packageContexts);
-    // }
+        // tslint:disable-next-line: no-object-mutation
+        context.releases = releases;
 
-    /**
-     * STEPS:
-     *
-     * run(verifyConditions)
-     *
-     * set(context.lastRelease)
-     * set(context.commits)
-     *
-     * run(analyzeCommits) -> set(context.nextRelease)
-     *
-     * set(context.nextRelease.version)
-     * set(context.nextRelease.gitTag)
-     *
-     * run(verifyRelease)
-     *
-     * run(generateNotes) -> set(context.nextRelease.notes)
-     *
-     * run(prepare)
-     *
-     * # create & push git tag
-     *
-     * run(publish) -> set(context.releases)
-     *
-     * run(success) | run(fail)
-     */
+        const { _id, readme, ...pkg } = (await readPkg({
+          cwd: location
+        })) as Record<string, any>;
+
+        const pkgWithConfig = {
+          ...pkg,
+          publishConfig: {
+            ...pkg.publishConfig,
+            registry: config.npmRegistry
+          }
+        };
+
+        await writePkg(location, pkgWithConfig);
+        await npmPublish({ pkgRoot: location }, pkgWithConfig, context);
+        await writePkg(location, pkg);
+      }
+
+      await GithubRelease.publish(githubReleaseConfig, rootContext);
+
+      await promisifyPlugin('success', updatedNames, packageContexts);
+      // await GithubRelease.success(githubReleaseConfig, rootContext);
+    } catch (err) {
+      console.error(err);
+      await promisifyPlugin('fail', updatedNames, packageContexts);
+      // await GithubRelease.fail(githubReleaseConfig, rootContext);
+    }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };
 
-async function hijackSemanticRelease(config: Configuration): Promise<Context> {
+async function hijackSemanticRelease({
+  assets,
+  releaseAssets,
+  npmRegistry,
+  ...config
+}: Configuration): Promise<Context> {
   await semanticRelease(
     {
       ...config,

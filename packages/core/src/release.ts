@@ -1,9 +1,8 @@
-import { commitFilter } from '@iolaus/common';
 import { Context, Release } from 'semantic-release';
 import getCommits from 'semantic-release/lib/get-commits';
 import getLastRelease from 'semantic-release/lib/get-last-release';
 import { PackageContext } from './types';
-import { createPackageContext } from './utils';
+import { commitFilter, createPackageContext } from './utils';
 
 export async function initializeRelease(
   pkgName: string,

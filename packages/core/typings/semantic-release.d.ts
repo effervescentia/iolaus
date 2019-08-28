@@ -21,12 +21,12 @@ declare module 'semantic-release' {
   export interface Release {
     /** The type of the release. */
     readonly type: ReleaseType;
-    /** The version name of the release */
-    readonly version: string;
-    /** The Git tag of the release. */
-    readonly gitTag: string;
     /** The Git checksum of the last commit of the release. */
     readonly gitHead: string;
+    /** The version name of the release */
+    version: string; // tslint:disable-line readonly-keyword
+    /** The Git tag of the release. */
+    gitTag: string; // tslint:disable-line readonly-keyword
   }
 
   export interface NextRelease extends Release {
@@ -42,6 +42,10 @@ declare module 'semantic-release' {
     nextRelease?: NextRelease;
     /** All relevant commits since last release. */
     commits?: Commit[];
+    /** Releases */
+    releases?: Release[];
+    /** Errors */
+    errors?: string[];
     // tslint:enable readonly-keyword
 
     /** The semantic release configuration itself. */
@@ -89,7 +93,7 @@ declare module 'semantic-release' {
     readonly generateNotes: Plugin<string>;
     readonly verifyRelease: Plugin;
     readonly prepare: Plugin;
-    readonly publish: Plugin;
+    readonly publish: Plugin<Release[]>;
     readonly success: Plugin;
     readonly fail: Plugin;
   }
@@ -116,6 +120,16 @@ declare module 'semantic-release/lib/plugins' {
   ): Promise<Plugins>;
 
   export = createPlugins;
+}
+
+declare module 'semantic-release/lib/git' {
+  import { Context, Plugins } from 'semantic-release';
+
+  export function getGitHead(context: Context): Promise<string>;
+
+  export function tag(tagName: string, context: Context): Promise<void>;
+
+  export function push(repositoryUrl: string, context: Context): Promise<void>;
 }
 
 declare module 'semantic-release/lib/get-last-release' {
