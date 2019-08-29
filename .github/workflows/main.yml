@@ -1,0 +1,13 @@
+name: Build and Release
+
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: Borales/actions-yarn@master
+        with:
+          args: install
