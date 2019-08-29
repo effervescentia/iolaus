@@ -1,10 +1,9 @@
-name: Build, Test and Release
+name: Build and Test
 
 on: push
 
 jobs:
   build_and_test:
-    id: build_and_test
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
