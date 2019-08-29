@@ -7,24 +7,31 @@ jobs:
     name: Build, Test and Release
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v1
+
       - name: Install Node Dependencies
-        uses: Borales/actions-yarn@master
+        uses: Borales/actions-yarn@v1.1.0
         with:
           args: install
+
       - name: Setup Monorepo Links
-        uses: Borales/actions-yarn@master
+        uses: Borales/actions-yarn@v1.1.0
         with:
           args: setup
+
       - name: Build Packages
-        uses: Borales/actions-yarn@master
+        uses: Borales/actions-yarn@v1.1.0
         with:
           args: build
+
       - name: Run Tests
-        uses: Borales/actions-yarn@master
+        uses: Borales/actions-yarn@v1.1.0
         with:
           args: test
+          
       - name: Release
-        uses: Borales/actions-yarn@master
+        uses: Borales/actions-yarn@v1.1.0
         if: github.ref == 'master'
         with:
           args: release
