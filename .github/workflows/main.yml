@@ -29,9 +29,9 @@ jobs:
         uses: Borales/actions-yarn@1.1.0
         with:
           args: test
-          
+
       - name: Release
         uses: Borales/actions-yarn@1.1.0
-        if: github.ref == 'master'
+        if: github.ref == 'refs/heads/master'
         with:
           args: release
