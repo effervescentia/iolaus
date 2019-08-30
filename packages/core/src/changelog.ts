@@ -5,6 +5,7 @@ import path from 'path';
 import { PackageContext } from './types';
 
 const SEMANTIC_COMMIT_PATTERN = /^(\w+)(?:\(([^)]*)\))?:\s*(.*)$/;
+const COMMENT_INJECTION_POINT = '<!-- INJECT CHANGELOG HERE -->';
 // const BREAKING_CHANGE = 'BREAKING CHANGE';
 
 enum CommitType {
@@ -69,7 +70,7 @@ async function getChangelog(changelogFile: string): Promise<string> {
 
     return changelog.trim();
   } catch {
-    return '# Changelog';
+    return `# Changelog\n\n${COMMENT_INJECTION_POINT}`;
   }
 }
 
@@ -81,14 +82,20 @@ export async function generateChangelog(
 ): Promise<{ readonly file: string; readonly content: string }> {
   const changelogFile = path.join(directory, 'CHANGELOG.md');
   // tslint:disable-next-line: no-let
-  let changelog = await getChangelog(changelogFile);
+  let nextChangelogEntry = '';
 
-  changelog += '\n\n## (2019-12-31)';
+  nextChangelogEntry += `\n\n## ${updatedPkgs
+    .map(
+      pkgName => `\`${pkgContexts.get(pkgName).context.nextRelease.gitTag}\``
+    )
+    .join(', ')} (2019-12-31)`;
 
   updatedPkgs.forEach(pkgName => {
     const { context } = pkgContexts.get(pkgName);
 
-    changelog += `\n\n### ${pkgName} v${context.nextRelease.version} (${context.nextRelease.gitTag})\n`;
+    nextChangelogEntry += `\n\n### ${pkgName} v${
+      context.nextRelease.version
+    } (${context.nextRelease.gitTag})\n`;
 
     const updatedDependencies = Array.from(
       graph.get(pkgName).localDependencies.keys()
@@ -100,7 +107,9 @@ export async function generateChangelog(
         depName => {
           const { context: depContext } = pkgContexts.get(depName);
 
-          return `\n* *update*: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
+          return `\n* *update*: upgrade \`${depName}\` from \`v${
+            depContext.lastRelease.version
+          }\` -> \`v${depContext.nextRelease.version}\``;
         }
       )}`;
     }
@@ -113,7 +122,9 @@ export async function generateChangelog(
               updatedDependencies.map(depName => {
                 const { context: depContext } = pkgContexts.get(depName);
 
-                return `**update**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
+                return `**update**: upgrade \`${depName}\` from \`v${
+                  depContext.lastRelease.version
+                }\` -> \`v${depContext.nextRelease.version}\``;
               })
             ]
           ]
@@ -141,19 +152,28 @@ export async function generateChangelog(
     });
 
     VISIBLE_TYPES.forEach(type => {
-      changelog += addEntriesToChangelog(changelogEntries, type);
+      nextChangelogEntry += addEntriesToChangelog(changelogEntries, type);
     });
 
     if (HIDDEN_TYPES.some(type => changelogEntries.has(type))) {
-      changelog += '<details><summary>Additional Details</summary><p>';
+      nextChangelogEntry += '<details><summary>Additional Details</summary><p>';
 
       HIDDEN_TYPES.forEach(type => {
-        changelog += addEntriesToChangelog(changelogEntries, type);
+        nextChangelogEntry += addEntriesToChangelog(changelogEntries, type);
       });
 
-      changelog += '</p></details>';
+      nextChangelogEntry += '</p></details>';
     }
   });
+
+  const currentChangelog = await getChangelog(changelogFile);
+  const changelogInjectionIndex =
+    currentChangelog.indexOf(COMMENT_INJECTION_POINT) +
+    COMMENT_INJECTION_POINT.length;
+  const changelog =
+    currentChangelog.slice(0, changelogInjectionIndex) +
+    nextChangelogEntry +
+    currentChangelog.slice(changelogInjectionIndex);
 
   return {
     content: changelog,

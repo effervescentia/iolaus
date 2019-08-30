@@ -204,7 +204,7 @@ export default async (userConfig: Configuration) => {
               packageContexts.get(pkgName).context.nextRelease.version
             }`
         )
-        .join(', ')}`
+        .join('')}`
     );
 
     for (const pkgName of updatedNames) {
