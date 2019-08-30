@@ -85,3 +85,22 @@
 
 #### :link: Dependency Updates:
 - **update**: upgrade `@iolaus/core` from `v1.0.2` -> `v1.0.3`
+
+## (2019-12-31)
+
+### @iolaus/common v1.0.4 (@iolaus/common-v1.0.4)
+
+#### :bug: Bug Fixes:
+- **github**: create a release for each package (018165939f6c97df1be5aa90cc0a92bff0025bfa)
+
+### @iolaus/core v1.0.4 (@iolaus/core-v1.0.4)
+
+#### :bug: Bug Fixes:
+- **github**: create a release for each package (018165939f6c97df1be5aa90cc0a92bff0025bfa)
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/common` from `v1.0.3` -> `v1.0.4`
+
+### iolaus v1.0.4 (iolaus-v1.0.4)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.3` -> `v1.0.4`
