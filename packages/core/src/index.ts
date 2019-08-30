@@ -169,13 +169,12 @@ export default async (userConfig: Configuration) => {
           .forEach(pkgKey =>
             updatedDependencies.forEach(depName => {
               const pkgDeps = pkg[pkgKey];
+              const nextVersion = packageContexts.get(depName).context
+                .nextRelease.version;
 
-              if (
-                depName in pkgDeps &&
-                pkgDeps !== context.nextRelease.version
-              ) {
+              if (depName in pkgDeps && pkgDeps[depName] !== nextVersion) {
                 // tslint:disable-next-line: no-object-mutation
-                pkgDeps[depName] = context.nextRelease.version;
+                pkgDeps[depName] = nextVersion;
               }
             })
           );
