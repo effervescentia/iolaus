@@ -2,6 +2,20 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`@iolaus/core-v1.4.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.4.0), [`iolaus-v1.4.0`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.4.0) (2019-12-31)
+
+### `@iolaus/core`
+
+#### :sparkles: New Features
+
+- **release**: do not publish or release private packages ([2298c232](https://github.com/effervescentia/iolaus/commit/2298c23209b1d417e04444713840082977a22bdb))
+
+### `iolaus`
+
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.3.4` -> `v1.4.0`
+
 ## [`iolaus-v1.3.4`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.3.4), [`@iolaus/common-v1.1.2`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/common-v1.1.2), [`@iolaus/core-v1.3.4`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.3.4) (2019-12-31)
 
 ### `iolaus`
