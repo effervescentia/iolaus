@@ -18,13 +18,12 @@ Iolaus is an opinionated versioning system built to support large monorepos usin
 
 ## Getting Started
 
-Install `iolaus` globally or as a dev dependency in your project, you can also use `npx` which can be useful for running in CI environments.
-For the purposes of this example we will install it as a dev dependency.
+Install `iolaus` a dev dependency in your project as well as `lerna` and `semantic-release` which it relies on to run.
 
 ```sh
-npm install -D iolaus
+npm install -D iolaus lerna semantic-release
 # or
-yarn add -D iolaus
+yarn add -D iolaus lerna semantic-release
 ```
 
 Add a release script to your `package.json`.
