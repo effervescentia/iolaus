@@ -24,7 +24,7 @@
   "devDependencies": {
     "@team-griffin/install-self-peers": "^1.1.1",
     "@types/sinon": "^7.0.11",
-    "ava": "1.4.1",
+    "ava": "^2.3.0",
     "codecov": "^3.1.0",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^2.1.0",
@@ -44,6 +44,9 @@
     "tslint-immutable": "^5.0.0",
     "typedoc": "^0.13.0",
     "typescript": "^3.1.6"
+  },
+  "resolutions": {
+    "lodash.merge": "^4.6.2"
   },
   "config": {
     "commitizen": {

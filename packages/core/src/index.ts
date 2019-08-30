@@ -200,23 +200,25 @@ export default async (userConfig: Configuration) => {
       `chore(release): release packages [skip ci]\n${updatedNames
         .map(
           pkgName =>
-            `\n- \`${pkgName}\` -> \`v${
+            `\n- ${pkgName} -> v${
               packageContexts.get(pkgName).context.nextRelease.version
-            }\``
+            }`
         )
-        .join(', ')}\n\n${changelog}`
+        .join(', ')}`
     );
 
     for (const pkgName of updatedNames) {
       const { context } = packageContexts.get(pkgName);
+      const nextTag = context.nextRelease.gitTag;
 
       if (config.dryRun) {
-        rootContext.logger.warn(
-          `Skip ${context.nextRelease.gitTag} tag creation in dry-run mode`
-        );
+        rootContext.logger.warn(`Skip ${nextTag} tag creation in dry-run mode`);
       } else {
-        await git(cwd).addTag(context.nextRelease.gitTag);
-        rootContext.logger.success(`Created tag ${context.nextRelease.gitTag}`);
+        await isomorphicGit.tag({
+          dir: cwd,
+          ref: nextTag
+        });
+        rootContext.logger.success(`Created tag ${nextTag}`);
       }
     }
 

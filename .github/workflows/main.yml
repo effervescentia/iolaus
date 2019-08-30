@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - master
+
 jobs:
   build_test_release:
     name: Build, Test and Release
@@ -15,7 +16,7 @@ jobs:
       - name: Verify Commit
         uses: veggiemonk/skip-commit@1.0.0
         env:
-          COMMIT_FILTER: "[skip ci]"
+          COMMIT_FILTER: "skip ci"
 
       - name: Checkout Code
         uses: actions/checkout@v1
