@@ -213,7 +213,6 @@ export default async (userConfig: Configuration) => {
         );
       } else {
         await git(cwd).addTag(context.nextRelease.gitTag);
-        await git(cwd).pushTags(repositoryUrl);
         rootContext.logger.success(`Created tag ${context.nextRelease.gitTag}`);
       }
     }
