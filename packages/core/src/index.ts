@@ -223,7 +223,7 @@ export default async (userConfig: Configuration) => {
       await isomorphicGit.push({
         dir: cwd,
         fs,
-        ref: config.branch,
+        remoteRef: config.branch,
         token: process.env.GH_TOKEN
       });
       await Promise.all(
