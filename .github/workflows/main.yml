@@ -16,34 +16,40 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v1
 
-      - name: Filter Commit Message
+      - id: filter_commit
+        name: Filter Commit Message
         uses: veggiemonk/skip-commit@1.0.0
+        continue-on-error: true
         env:
           COMMIT_FILTER: "\\[skip ci\\]"
 
       - name: Install Node Dependencies
         uses: Borales/actions-yarn@1.1.0
+        if: job.steps.filter_commit.status == success()
         with:
           args: install
 
       - name: Setup Monorepo Links
         uses: Borales/actions-yarn@1.1.0
+        if: job.steps.filter_commit.status == success()
         with:
           args: setup
 
       - name: Build Packages
         uses: Borales/actions-yarn@1.1.0
+        if: job.steps.filter_commit.status == success()
         with:
           args: build
 
       - name: Run Tests
         uses: Borales/actions-yarn@1.1.0
+        if: job.steps.filter_commit.status == success()
         with:
           args: test
 
       - name: Release
         uses: Borales/actions-yarn@1.1.0
-        if: github.ref == 'refs/heads/master'
+        if: job.steps.filter_commit.status == success() && github.ref == 'refs/heads/master'
         with:
           args: release
         env:
