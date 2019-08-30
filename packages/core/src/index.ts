@@ -88,8 +88,11 @@ export default async (userConfig: Configuration) => {
 
     rootContext.logger.await('verifying packages');
 
-    await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
-    await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
+    if (!config.dryRun) {
+      await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
+      await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
+    }
+
     for (const pkgName of packageNames) {
       await initializeRelease(
         pkgName,
