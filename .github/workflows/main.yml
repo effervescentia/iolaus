@@ -35,3 +35,6 @@ jobs:
         if: github.ref == 'refs/heads/master'
         with:
           args: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
