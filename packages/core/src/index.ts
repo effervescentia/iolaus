@@ -14,7 +14,7 @@ import semanticRelease, {
   NextRelease,
   Plugins
 } from 'semantic-release';
-import { getGitHead, push } from 'semantic-release/lib/git';
+import { getGitHead } from 'semantic-release/lib/git';
 import semver, { ReleaseType } from 'semver';
 import writePkg from 'write-pkg';
 import { generateChangelog } from './changelog';
@@ -74,7 +74,6 @@ export default async (userConfig: Configuration) => {
       '@semantic-release/commit-analyzer',
       '@semantic-release/release-notes-generator'
     ]);
-    const repositoryUrl = rootContext.options.repositoryUrl;
 
     const githubReleaseConfig: GithubRelease.Config = {
       assets: config.releaseAssets,
