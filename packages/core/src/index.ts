@@ -13,7 +13,7 @@ import readPkg from 'read-pkg';
 import semanticRelease, {
   Context,
   NextRelease,
-  Plugins
+  Plugins,
 } from 'semantic-release';
 import { getGitHead } from 'semantic-release/lib/git';
 import semver, { ReleaseType } from 'semver';
@@ -27,7 +27,7 @@ import {
   git,
   trackUpdates,
   transformOptions,
-  transformPlugins
+  transformPlugins,
 } from './utils';
 
 const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
@@ -35,7 +35,7 @@ const DEFAULT_CONFIG: Configuration = {
   assets: ['packages/*/package.json', 'CHANGELOG.md'],
   branch: 'master',
   npmRegistry: 'https://registry.npmjs.org/',
-  releaseAssets: []
+  releaseAssets: [],
 };
 
 function promisifyPlugin<T = void>(
@@ -55,10 +55,10 @@ function promisifyPlugin<T = void>(
 export default async (userConfig: Configuration) => {
   const config = {
     ...DEFAULT_CONFIG,
-    ...userConfig
+    ...userConfig,
   };
   const gitReleaseConfig: GitRelease.Config = {
-    assets: config.assets
+    assets: config.assets,
   };
 
   const cwd = process.cwd();
@@ -73,7 +73,7 @@ export default async (userConfig: Configuration) => {
 
     const rootContext = transformPlugins(hijackedContext, () => [
       '@semantic-release/commit-analyzer',
-      '@semantic-release/release-notes-generator'
+      '@semantic-release/release-notes-generator',
     ]);
 
     const githubReleaseConfig: GithubRelease.Config = {
@@ -81,7 +81,7 @@ export default async (userConfig: Configuration) => {
       failComment: false,
       labels: ['iolaus'],
       releasedLabels: ['released'],
-      successComment: false
+      successComment: false,
     };
 
     const packageContexts = new Map<string, PackageContext>();
@@ -130,7 +130,7 @@ export default async (userConfig: Configuration) => {
       // tslint:disable-next-line: no-object-mutation no-object-literal-type-assertion
       context.nextRelease = {
         gitHead: await getGitHead(context),
-        type
+        type,
       } as NextRelease;
 
       await plugins.verifyRelease(context);
@@ -143,7 +143,7 @@ export default async (userConfig: Configuration) => {
         : '1.0.0';
       context.nextRelease.version = version;
       context.nextRelease.gitTag = template(context.options.tagFormat)({
-        version
+        version,
       });
       // tslint:enable: no-object-mutation
     }
@@ -184,8 +184,13 @@ export default async (userConfig: Configuration) => {
       })
     );
 
+    const repositoryUrl = rootContext.options.repositoryUrl.replace(
+      /\.git$/,
+      ''
+    );
     const { file: changelogFile, content: changelog } = await generateChangelog(
       cwd,
+      repositoryUrl,
       graph,
       packageContexts,
       updatedNames
@@ -217,7 +222,7 @@ export default async (userConfig: Configuration) => {
         await isomorphicGit.tag({
           dir: cwd,
           fs,
-          ref: nextTag
+          ref: nextTag,
         });
         rootContext.logger.success(`Created tag ${nextTag}`);
       }
@@ -230,7 +235,7 @@ export default async (userConfig: Configuration) => {
         dir: cwd,
         fs,
         remoteRef: config.branch,
-        token: process.env.GH_TOKEN
+        token: process.env.GH_TOKEN,
       });
       await Promise.all(
         updatedNames.map(pkgName =>
@@ -238,7 +243,7 @@ export default async (userConfig: Configuration) => {
             dir: cwd,
             fs,
             ref: packageContexts.get(pkgName).context.nextRelease.gitTag,
-            token: process.env.GH_TOKEN
+            token: process.env.GH_TOKEN,
           })
         )
       );
@@ -255,21 +260,39 @@ export default async (userConfig: Configuration) => {
         context.releases = releases;
 
         const { _id, readme, ...pkg } = (await readPkg({
-          cwd: location
+          cwd: location,
         })) as Record<string, any>;
 
         const pkgWithConfig = {
           ...pkg,
           publishConfig: {
             ...pkg.publishConfig,
-            registry: config.npmRegistry
-          }
+            registry: config.npmRegistry,
+          },
         };
 
         await writePkg(location, pkgWithConfig);
         await npmPublish({ pkgRoot: location }, pkgWithConfig, context);
         await writePkg(location, pkg);
-        await GithubRelease.publish(githubReleaseConfig, context);
+
+        const updatedDependencies = Array.from(
+          graph.get(pkgName).localDependencies.keys()
+        ).filter(depName => updatedNames.includes(depName));
+        const dependencyReleaseNotes = updatedDependencies.length
+          ? `\n\n### Dependency Updates\n${updatedDependencies.map(depName => {
+              const { context: depContext } = packageContexts.get(depName);
+
+              return `**automatic**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
+            })}`
+          : '';
+
+        await GithubRelease.publish(githubReleaseConfig, {
+          ...context,
+          nextRelease: {
+            ...context.nextRelease,
+            notes: context.nextRelease.notes + dependencyReleaseNotes,
+          },
+        });
       }
 
       await promisifyPlugin('success', updatedNames, packageContexts);
@@ -297,17 +320,17 @@ async function hijackSemanticRelease({
     {
       ...config,
       dryRun: true,
-      plugins: [path.resolve(__dirname, 'context-sink')]
+      plugins: [path.resolve(__dirname, 'context-sink')],
     },
     {
-      env: process.env
+      env: process.env,
     } as any
   );
 
   try {
     return transformOptions(getContext(), () => ({
       ...getConfig(),
-      ...config
+      ...config,
     }));
   } catch {
     throw new Error('unable to run semantic release to setup release');

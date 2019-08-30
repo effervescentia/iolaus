@@ -15,51 +15,51 @@ enum CommitType {
   REFACTOR = 'refactor',
   PERFORMANCE = 'perf',
   REVERT = 'revert',
-  DEPENDENCIES = 'deps'
+  DEPENDENCIES = 'deps',
 }
 
 const VISIBLE_TYPES = [
   CommitType.FEATURE,
   CommitType.FIX,
   CommitType.DEPENDENCIES,
-  CommitType.REVERT
+  CommitType.REVERT,
 ];
 const HIDDEN_TYPES = [
   CommitType.PERFORMANCE,
   CommitType.REFACTOR,
-  CommitType.DOCS
+  CommitType.DOCS,
 ];
 const ALL_TYPES = [...VISIBLE_TYPES, ...HIDDEN_TYPES];
 
 const COMMITS = {
   [CommitType.FEATURE]: {
     emoji: ':sparkles:',
-    title: 'New Features'
+    title: 'New Features',
   },
   [CommitType.FIX]: {
     emoji: ':bug:',
-    title: 'Bug Fixes'
+    title: 'Bug Fixes',
   },
   [CommitType.DOCS]: {
     emoji: ':blue_book:',
-    title: 'Documentation'
+    title: 'Documentation',
   },
   [CommitType.REFACTOR]: {
     emoji: ':muscle:',
-    title: 'Refactors'
+    title: 'Refactors',
   },
   [CommitType.REVERT]: {
     emoji: ':leftwards_arrow_with_hook:',
-    title: 'Revert Changes'
+    title: 'Revert Changes',
   },
   [CommitType.DEPENDENCIES]: {
     emoji: ':link:',
-    title: 'Dependency Updates'
+    title: 'Dependency Updates',
   },
   [CommitType.PERFORMANCE]: {
     emoji: ':link:',
-    title: 'Performance Improvements'
-  }
+    title: 'Performance Improvements',
+  },
 };
 
 async function getChangelog(changelogFile: string): Promise<string> {
@@ -76,6 +76,7 @@ async function getChangelog(changelogFile: string): Promise<string> {
 
 export async function generateChangelog(
   directory: string,
+  repositoryUrl: string,
   graph: PackageGraph,
   pkgContexts: Map<string, PackageContext>,
   updatedPkgs: string[]
@@ -85,30 +86,21 @@ export async function generateChangelog(
   let nextChangelogEntry = '';
 
   nextChangelogEntry += `\n\n## ${updatedPkgs
-    .map(
-      pkgName => `\`${pkgContexts.get(pkgName).context.nextRelease.gitTag}\``
-    )
+    .map(pkgName => {
+      const gitTag = pkgContexts.get(pkgName).context.nextRelease.gitTag;
+
+      return `[\`${gitTag}\`](${repositoryUrl}/releases/tag/${gitTag})`;
+    })
     .join(', ')} (2019-12-31)`;
 
   updatedPkgs.forEach(pkgName => {
     const { context } = pkgContexts.get(pkgName);
 
-    nextChangelogEntry += `\n\n### ${pkgName} v${context.nextRelease.version} (${context.nextRelease.gitTag})\n`;
+    nextChangelogEntry += `\n\n### \`${pkgName}\`\n`;
 
     const updatedDependencies = Array.from(
       graph.get(pkgName).localDependencies.keys()
     ).filter(depName => updatedPkgs.includes(depName));
-
-    if (updatedDependencies.length) {
-      // tslint:disable-next-line: no-object-mutation
-      context.nextRelease.notes += `\n### Bug Fixes\n${updatedDependencies.map(
-        depName => {
-          const { context: depContext } = pkgContexts.get(depName);
-
-          return `\n* *update*: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
-        }
-      )}`;
-    }
 
     const changelogEntries = new Map<CommitType, string[]>(
       updatedDependencies.length
@@ -118,9 +110,9 @@ export async function generateChangelog(
               updatedDependencies.map(depName => {
                 const { context: depContext } = pkgContexts.get(depName);
 
-                return `**update**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
-              })
-            ]
+                return `**automatic**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
+              }),
+            ],
           ]
         : []
     );
@@ -140,7 +132,9 @@ export async function generateChangelog(
             scope
               ? `**${scope}**${subject ? `: ${subject}` : ''}`
               : subject || ''
-          } (${commit.hash})`
+          } ([${commit.hash.slice(0, 8)}](${repositoryUrl}/commit/${
+            commit.hash
+          }))`,
         ]);
       }
     });
@@ -171,7 +165,7 @@ export async function generateChangelog(
 
   return {
     content: changelog,
-    file: changelogFile
+    file: changelogFile,
   };
 }
 

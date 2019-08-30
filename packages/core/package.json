@@ -1,11 +1,14 @@
 {
   "name": "@iolaus/core",
-  "version": "1.1.0",
   "description": "An opinionated semantic versioning system for lerna.",
-  "main": "build/main/index.js",
-  "repository": "https://github.com/effervescentia/iolaus.git",
-  "license": "MIT",
   "keywords": [],
+  "version": "1.1.0",
+  "engines": {
+    "node": ">=8.9"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/effervescentia/iolaus.git",
+  "main": "build/main/index.js",
   "scripts": {
     "describe": "npm-scripts-info",
     "build": "run-s clean build:main",
@@ -45,13 +48,6 @@
     "reset": "Delete all untracked files and reset the repo to the last commit",
     "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
   },
-  "engines": {
-    "node": ">=8.9"
-  },
-  "peerDependencies": {
-    "lerna": "^3.13.3",
-    "semantic-release": "^15.13.3"
-  },
   "dependencies": {
     "@iolaus/common": "1.0.5",
     "@semantic-release/changelog": "^3.0.2",
@@ -73,8 +69,14 @@
     "simple-git": "^1.113.0",
     "write-pkg": "^4.0.0"
   },
-  "publishConfig": {
-    "access": "public"
+  "peerDependencies": {
+    "lerna": "^3.13.3",
+    "semantic-release": "^15.13.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-lerna-changelog"
+    }
   },
   "ava": {
     "failFast": true,
@@ -85,17 +87,12 @@
       "build/main/**/*.js"
     ]
   },
-  "config": {
-    "commitizen": {
-      "path": "cz-lerna-changelog"
-    }
-  },
-  "prettier": {
-    "singleQuote": true
-  },
   "nyc": {
     "exclude": [
       "**/*.test.js"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

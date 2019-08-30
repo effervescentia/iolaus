@@ -1,0 +1,42 @@
+{
+  "sortToTop": [
+    "name",
+    "description",
+    "keywords",
+    "categories",
+
+    "version",
+    "engines",
+    "private",
+
+    "author",
+    "publisher",
+    "license",
+    "repository",
+
+    "bin",
+    "main",
+    "module",
+    "typings",
+
+    "scripts",
+    "scripts-info",
+
+    "resolutions",
+    "dependencies",
+    "peerDependencies",
+    "optionalDependencies",
+    "devDependencies",
+
+    "config"
+  ],
+  "sortedSubItems": [
+    "resolutions",
+    "dependencies",
+    "peerDependencies",
+    "optionalDependencies",
+    "devDependencies",
+
+    "config"
+  ]
+}
