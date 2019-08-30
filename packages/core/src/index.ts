@@ -204,7 +204,6 @@ export default async (userConfig: Configuration) => {
         .join(', ')}\n\n${changelog}`
     );
 
-
     for (const pkgName of updatedNames) {
       const { context } = packageContexts.get(pkgName);
 
@@ -215,9 +214,7 @@ export default async (userConfig: Configuration) => {
       } else {
         await git(cwd).addTag(context.nextRelease.gitTag);
         await git(cwd).pushTags(repositoryUrl);
-        rootContext.logger.success(
-          `Created tag ${context.nextRelease.gitTag}`
-        );
+        rootContext.logger.success(`Created tag ${context.nextRelease.gitTag}`);
       }
     }
 
@@ -268,7 +265,7 @@ export default async (userConfig: Configuration) => {
   } catch (err) {
     // tslint:disable-next-line: no-console
     console.error(err);
-    
+
     process.exit(-1);
   }
 };
