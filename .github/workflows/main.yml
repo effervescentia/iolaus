@@ -12,6 +12,11 @@ jobs:
     name: Build, Test and Release
     runs-on: ubuntu-latest
     steps:
+      - name: Verify Commit
+        uses: veggiemonk/skip-commit@1.0.0
+        env:
+          COMMIT_FILTER: "[skip ci]"
+
       - name: Checkout Code
         uses: actions/checkout@v1
 
