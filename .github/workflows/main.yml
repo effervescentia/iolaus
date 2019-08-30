@@ -1,10 +1,12 @@
 name: Build, Test and Release
 
 on:
-  - pull_request
-  - push:
-      branches:
-        - master
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - master
 jobs:
   build_test_release:
     name: Build, Test and Release
