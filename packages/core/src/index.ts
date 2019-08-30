@@ -4,6 +4,7 @@ import { getPackages } from '@lerna/project';
 import GitRelease from '@semantic-release/git';
 import GithubRelease from '@semantic-release/github';
 import npmPublish from '@semantic-release/npm/lib/publish';
+import npmSetAuth from '@semantic-release/npm/lib/set-npmrc-auth';
 import fs from 'fs';
 import * as isomorphicGit from 'isomorphic-git';
 import template from 'lodash.template';
@@ -99,6 +100,8 @@ export default async (userConfig: Configuration) => {
       );
     }
     rootContext.logger.complete('packages verified');
+
+    await npmSetAuth(config.npmRegistry, rootContext);
 
     const packageUpdates = new Map<string, ReleaseType>();
 
