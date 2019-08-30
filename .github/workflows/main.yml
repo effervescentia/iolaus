@@ -19,7 +19,7 @@ jobs:
       - name: Filter Commit Message
         uses: veggiemonk/skip-commit@1.0.0
         env:
-          COMMIT_FILTER: "[skip ci]"
+          COMMIT_FILTER: "\\[skip ci\\]"
 
       - name: Rehydrate node_modules/
         uses: actions/download-artifact@1.0.0
