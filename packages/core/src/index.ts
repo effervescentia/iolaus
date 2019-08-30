@@ -251,6 +251,7 @@ export default async (userConfig: Configuration) => {
       // tslint:disable-next-line: no-console
       console.error(err);
       await promisifyPlugin('fail', updatedNames, packageContexts);
+      throw err;
       // await GithubRelease.fail(githubReleaseConfig, rootContext);
     }
   } catch (err) {
