@@ -5,7 +5,7 @@ import GitRelease from '@semantic-release/git';
 import GithubRelease from '@semantic-release/github';
 import npmPublish from '@semantic-release/npm/lib/publish';
 import fs from 'fs';
-import isomorphicGit from 'isomorphic-git';
+import * as isomorphicGit from 'isomorphic-git';
 import template from 'lodash.template';
 import path from 'path';
 import readPkg from 'read-pkg';
