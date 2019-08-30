@@ -218,20 +218,17 @@ export default async (userConfig: Configuration) => {
       const { context } = packageContexts.get(pkgName);
       const nextTag = context.nextRelease.gitTag;
 
-      if (config.dryRun) {
-        rootContext.logger.warn(`Skip ${nextTag} tag creation in dry-run mode`);
-      } else {
-        await isomorphicGit.tag({
-          dir: cwd,
-          fs,
-          ref: nextTag,
-        });
-        rootContext.logger.success(`Created tag ${nextTag}`);
-      }
+      await isomorphicGit.tag({
+        dir: cwd,
+        fs,
+        ref: nextTag,
+      });
+      rootContext.logger.success(`Created tag ${nextTag}`);
     }
 
     if (config.dryRun) {
-      rootContext.logger.warn('Skip pushing changelog and version update');
+      rootContext.logger.warn('Skip release and publish - this is a dry run');
+      return;
     } else {
       await isomorphicGit.push({
         dir: cwd,
