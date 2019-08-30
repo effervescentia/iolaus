@@ -21,34 +21,19 @@ jobs:
         env:
           COMMIT_FILTER: "\\[skip ci\\]"
 
-      - name: Rehydrate node_modules/
+      - name: Rehydrate .yarn/ (commit)
         uses: actions/download-artifact@1.0.0
         continue-on-error: true
         with:
-          name: node_modules-${{ github.sha }}
-          path: node_modules
-
-      - name: Rehydrate node_modules/
-        uses: actions/download-artifact@1.0.0
-        continue-on-error: true
-        if: failure()
-        with:
-          name: node_modules-${{ github.ref }}
-          path: node_modules
-
-      - name: Rehydrate .yarn/
-        uses: actions/download-artifact@1.0.0
-        continue-on-error: true
-        with:
-          name: yarn_cache-${{ github.sha }}
+          name: "yarn_cache-*-${{ github.sha }}"
           path: ~/.yarn
 
-      - name: Rehydrate .yarn/
+      - name: Rehydrate .yarn/ (ref)
         uses: actions/download-artifact@1.0.0
         continue-on-error: true
         if: failure()
         with:
-          name: yarn_cache-${{ github.ref }}
+          name: "yarn_cache-${{ github.ref }}-*"
           path: ~/.yarn
 
       - name: Install Node Dependencies
@@ -56,28 +41,10 @@ jobs:
         with:
           args: install
 
-      - name: Cache node_modules/
+      - name: Cache .yarn/ (ref)
         uses: actions/upload-artifact@1.0.0
         with:
-          name: node_modules-${{ github.sha }}
-          path: node_modules
-
-      - name: Cache node_modules/
-        uses: actions/upload-artifact@1.0.0
-        with:
-          name: node_modules-${{ github.ref }}
-          path: node_modules
-
-      - name: Cache .yarn/
-        uses: actions/upload-artifact@1.0.0
-        with:
-          name: yarn_cache-${{ github.sha }}
-          path: ~/.yarn
-
-      - name: Cache .yarn/
-        uses: actions/upload-artifact@1.0.0
-        with:
-          name: yarn_cache-${{ github.ref }}
+          name: yarn_cache-${{ github.ref }}-${{ github.sha }}
           path: ~/.yarn
 
       - name: Setup Monorepo Links
