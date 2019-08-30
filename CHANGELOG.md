@@ -2,6 +2,32 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`iolaus-v1.3.1`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.3.1), [`@iolaus/common-v1.1.1`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/common-v1.1.1), [`@iolaus/core-v1.3.1`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.3.1) (2019-12-31)
+
+### `iolaus`
+
+#### :bug: Bug Fixes
+
+- **pkg update**: update dependencies to the correct version on force release ([d9e5a0ae](https://github.com/effervescentia/iolaus/commit/d9e5a0ae5b8bd5c38b81a72712583fbb841fa6bb))
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.3.0` -> `v1.3.1`
+
+### `@iolaus/common`
+
+#### :bug: Bug Fixes
+
+- **pkg update**: update dependencies to the correct version on force release ([d9e5a0ae](https://github.com/effervescentia/iolaus/commit/d9e5a0ae5b8bd5c38b81a72712583fbb841fa6bb))
+
+### `@iolaus/core`
+
+#### :bug: Bug Fixes
+
+- **pkg update**: update dependencies to the correct version on force release ([d9e5a0ae](https://github.com/effervescentia/iolaus/commit/d9e5a0ae5b8bd5c38b81a72712583fbb841fa6bb))
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/common` from `v1.1.0` -> `v1.1.1`
+
 ## [`iolaus-v1.3.0`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.3.0), [`@iolaus/common-v1.1.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/common-v1.1.0), [`@iolaus/core-v1.3.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.3.0) (2019-12-31)
 
 ### `iolaus`

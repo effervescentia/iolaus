@@ -2,7 +2,7 @@
   "name": "@iolaus/core",
   "description": "An opinionated semantic versioning system for lerna.",
   "keywords": [],
-  "version": "1.3.0",
+  "version": "1.3.1",
   "engines": {
     "node": ">=8.9"
   },
@@ -49,7 +49,7 @@
     "prepare-release": "One-step: clean, build, test, publish docs, and prep a release"
   },
   "dependencies": {
-    "@iolaus/common": "1.1.0",
+    "@iolaus/common": "1.1.1",
     "@semantic-release/changelog": "^3.0.2",
     "@semantic-release/commit-analyzer": "^6.3.0",
     "@semantic-release/git": "^7.0.16",
