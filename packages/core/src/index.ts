@@ -13,7 +13,7 @@ import semanticRelease, {
   NextRelease,
   Plugins
 } from 'semantic-release';
-import { getGitHead } from 'semantic-release/lib/git';
+import { getGitHead, push } from 'semantic-release/lib/git';
 import semver, { ReleaseType } from 'semver';
 import writePkg from 'write-pkg';
 import { generateChangelog } from './changelog';
@@ -203,23 +203,34 @@ export default async (userConfig: Configuration) => {
         )
         .join(', ')}\n\n${changelog}`
     );
-    await git(cwd).push(repositoryUrl, config.branch);
+
+
+    for (const pkgName of updatedNames) {
+      const { context } = packageContexts.get(pkgName);
+
+      if (config.dryRun) {
+        rootContext.logger.warn(
+          `Skip ${context.nextRelease.gitTag} tag creation in dry-run mode`
+        );
+      } else {
+        await git(cwd).addTag(context.nextRelease.gitTag);
+        await git(cwd).pushTags(repositoryUrl);
+        rootContext.logger.success(
+          `Created tag ${context.nextRelease.gitTag}`
+        );
+      }
+    }
+
+    if (config.dryRun) {
+      rootContext.logger.warn('Skip pushing changelog and version update');
+    } else {
+      await push(repositoryUrl, rootContext);
+      rootContext.logger.success('Pushed tags and commits');
+    }
 
     try {
       for (const pkgName of updatedNames) {
         const { location, context, plugins } = packageContexts.get(pkgName);
-
-        if (config.dryRun) {
-          rootContext.logger.warn(
-            `Skip ${context.nextRelease.gitTag} tag creation in dry-run mode`
-          );
-        } else {
-          await git(cwd).addTag(context.nextRelease.gitTag);
-          await git(cwd).pushTags(repositoryUrl);
-          rootContext.logger.success(
-            `Created tag ${context.nextRelease.gitTag}`
-          );
-        }
 
         const releases = await plugins.publish(context);
 
