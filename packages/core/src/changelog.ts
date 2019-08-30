@@ -93,9 +93,7 @@ export async function generateChangelog(
   updatedPkgs.forEach(pkgName => {
     const { context } = pkgContexts.get(pkgName);
 
-    nextChangelogEntry += `\n\n### ${pkgName} v${
-      context.nextRelease.version
-    } (${context.nextRelease.gitTag})\n`;
+    nextChangelogEntry += `\n\n### ${pkgName} v${context.nextRelease.version} (${context.nextRelease.gitTag})\n`;
 
     const updatedDependencies = Array.from(
       graph.get(pkgName).localDependencies.keys()
@@ -107,9 +105,7 @@ export async function generateChangelog(
         depName => {
           const { context: depContext } = pkgContexts.get(depName);
 
-          return `\n* *update*: upgrade \`${depName}\` from \`v${
-            depContext.lastRelease.version
-          }\` -> \`v${depContext.nextRelease.version}\``;
+          return `\n* *update*: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
         }
       )}`;
     }
@@ -122,9 +118,7 @@ export async function generateChangelog(
               updatedDependencies.map(depName => {
                 const { context: depContext } = pkgContexts.get(depName);
 
-                return `**update**: upgrade \`${depName}\` from \`v${
-                  depContext.lastRelease.version
-                }\` -> \`v${depContext.nextRelease.version}\``;
+                return `**update**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
               })
             ]
           ]
