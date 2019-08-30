@@ -33,7 +33,7 @@ const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
 const DEFAULT_CONFIG: Configuration = {
   assets: ['packages/*/package.json', 'CHANGELOG.md'],
   branch: 'master',
-  npmRegistry: '//registry.npmjs.org/',
+  npmRegistry: 'https://registry.npmjs.org/',
   releaseAssets: []
 };
 
