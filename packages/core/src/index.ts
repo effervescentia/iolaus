@@ -216,6 +216,7 @@ export default async (userConfig: Configuration) => {
       } else {
         await isomorphicGit.tag({
           dir: cwd,
+          fs,
           ref: nextTag
         });
         rootContext.logger.success(`Created tag ${nextTag}`);
