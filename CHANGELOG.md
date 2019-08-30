@@ -8,6 +8,21 @@
 
 #### :bug: Bug Fixes
 
+- **publish**: skip publish on dry run ([19a385f1](https://github.com/effervescentia/iolaus/commit/19a385f13f85721a23f64a233edc6b8fd55e7276))
+- **release**: skip git and github verify on dry run ([c616297e](https://github.com/effervescentia/iolaus/commit/c616297ed5b94142f4f74b0dd885e35d1f13e7fa))
+
+### `iolaus`
+
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.3.2` -> `v1.3.3`
+
+## [`@iolaus/core-v1.3.3`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.3.3), [`iolaus-v1.3.3`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.3.3) (2019-12-31)
+
+### `@iolaus/core`
+
+#### :bug: Bug Fixes
+
 - **release**: skip git and github verify on dry run ([c616297e](https://github.com/effervescentia/iolaus/commit/c616297ed5b94142f4f74b0dd885e35d1f13e7fa))
 
 ### `iolaus`
