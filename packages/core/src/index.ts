@@ -222,6 +222,7 @@ export default async (userConfig: Configuration) => {
     } else {
       await isomorphicGit.push({
         dir: cwd,
+        fs,
         ref: config.branch,
         token: process.env.GH_TOKEN
       });
@@ -229,6 +230,7 @@ export default async (userConfig: Configuration) => {
         updatedNames.map(pkgName =>
           isomorphicGit.push({
             dir: cwd,
+            fs,
             ref: packageContexts.get(pkgName).context.nextRelease.gitTag,
             token: process.env.GH_TOKEN
           })
