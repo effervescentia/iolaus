@@ -28,3 +28,22 @@
 - **verioning**: align versions to test release (7a3246cd4bd3de77bbec58eec8c5505d09c491ad)
 #### :link: Dependency Updates:
 - **update**: upgrade `@iolaus/common` from `vundefined` -> `v1.0.0`
+
+## (2019-12-31)
+
+### @iolaus/common v1.0.1 (@iolaus/common-v1.0.1)
+
+#### :bug: Bug Fixes:
+- **npm**: add schema to registry url (0625bd919abeac5569f903e7509ea7e57881afb0)
+
+### @iolaus/core v1.0.1 (@iolaus/core-v1.0.1)
+
+#### :bug: Bug Fixes:
+- **npm**: add schema to registry url (0625bd919abeac5569f903e7509ea7e57881afb0)
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/common` from `v1.0.0` -> `v1.0.1`
+
+### iolaus v1.0.1 (iolaus-v1.0.1)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.0` -> `v1.0.1`
