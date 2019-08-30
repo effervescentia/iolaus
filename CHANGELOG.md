@@ -2,6 +2,18 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## `@iolaus/core-v1.1.0`, `iolaus-v1.1.0` (2019-12-31)
+
+### @iolaus/core v1.1.0 (@iolaus/core-v1.1.0)
+
+#### :sparkles: New Features:
+- **changelog**: add new entries to the top of the changelog (f7ebb3fa8fe9bf434cb6606e28a5254326159c12)
+
+### iolaus v1.1.0 (iolaus-v1.1.0)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.6` -> `v1.1.0`
+
 ## (2019-12-31)
 
 ### iolaus v1.0.0 (iolaus-v1.0.0)
