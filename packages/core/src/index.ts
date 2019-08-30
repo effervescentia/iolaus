@@ -266,17 +266,15 @@ export default async (userConfig: Configuration) => {
         await writePkg(location, pkgWithConfig);
         await npmPublish({ pkgRoot: location }, pkgWithConfig, context);
         await writePkg(location, pkg);
-        await GithubRelease.publish(githubReleaseConfig, rootContext);
+        await GithubRelease.publish(githubReleaseConfig, context);
       }
 
       await promisifyPlugin('success', updatedNames, packageContexts);
-      // await GithubRelease.success(githubReleaseConfig, rootContext);
     } catch (err) {
       // tslint:disable-next-line: no-console
       console.error(err);
       await promisifyPlugin('fail', updatedNames, packageContexts);
       throw err;
-      // await GithubRelease.fail(githubReleaseConfig, rootContext);
     }
   } catch (err) {
     // tslint:disable-next-line: no-console
