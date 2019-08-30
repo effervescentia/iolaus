@@ -33,7 +33,7 @@
     "clean": "rimraf build test",
     "all": "run-s reset test cov:check doc:html",
     "prepare-release": "run-s all version doc:publish",
-    "install-peerdeps": "install-self-peers"
+    "install-peerdeps": "install-self-peers -- --frozen-lockfile"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",

@@ -10,10 +10,10 @@
   "repository": "https://github.com/effervescentia/iolaus.git",
   "scripts": {
     "build": "run-s build:common build:rest",
-    "setup": "lerna link && lerna run install-peerdeps",
     "build:common": "lerna run build --scope=@iolaus/common",
     "build:rest": "lerna run build --ignore=@iolaus/common",
     "test": "lerna run test",
+    "prepare": "lerna link && lerna run install-peerdeps",
     "release": "node packages/bin/index.js",
     "commit": "git cz"
   },
