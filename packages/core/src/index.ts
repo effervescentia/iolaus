@@ -203,7 +203,7 @@ export default async (userConfig: Configuration) => {
         )
         .join(', ')}\n\n${changelog}`
     );
-    await git(cwd).push(repositoryUrl);
+    await git(cwd).push(repositoryUrl, config.branch);
 
     try {
       for (const pkgName of updatedNames) {
