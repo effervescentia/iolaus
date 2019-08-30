@@ -18,6 +18,7 @@
     "commit": "git cz"
   },
   "resolutions": {
+    "deep-extend": "^0.5.1",
     "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
