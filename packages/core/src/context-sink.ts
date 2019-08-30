@@ -4,7 +4,7 @@ import { Sink } from './types';
 
 // tslint:disable-next-line: no-let
 let GLOBAL_SINK: Sink = {
-  initialized: false
+  initialized: false,
 };
 
 export function getSink(): Sink {
@@ -27,7 +27,7 @@ export function verifyConditions(
   GLOBAL_SINK = {
     config,
     context,
-    initialized: true
+    initialized: true,
   };
   // tslint:enable: no-object-mutation
 }

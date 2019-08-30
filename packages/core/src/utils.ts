@@ -17,7 +17,7 @@ export const SEMVER_TYPES: ReleaseType[] = [
   'preminor',
   'patch',
   'prepatch',
-  'prerelease'
+  'prerelease',
 ];
 
 export const git = cwd => simpleGit(cwd);
@@ -28,7 +28,7 @@ export function transformOptions(
 ): Context {
   return {
     ...context,
-    options: transform(context.options)
+    options: transform(context.options),
   };
 }
 
@@ -38,7 +38,7 @@ export function transformPlugins(
 ): Context {
   return transformOptions(context, options => ({
     ...options,
-    plugins: transform(context.options.plugins)
+    plugins: transform(context.options.plugins),
   }));
 }
 
@@ -110,14 +110,14 @@ export async function createPackageContext(
   baseContext: Context
 ): Promise<PackageContext> {
   const config = await cosmiconfig('iolaus', {
-    stopDir: cwd
+    stopDir: cwd,
   }).search(location);
 
   const context = transformPlugins(
     transformOptions(baseContext, options => ({
       ...options,
       tagFormat: `${pkgName}-${options.tagFormat}`,
-      ...config
+      ...config,
     })),
     // TODO: filter out base plugins that are re-declared in the child to preserve intended order
     basePlugins => basePlugins
@@ -126,11 +126,11 @@ export async function createPackageContext(
   return {
     context: {
       ...context,
-      errors: []
+      errors: [],
     },
     location,
     pkg: await readPkg({ cwd: location }),
-    plugins: await getSemanticPlugins(context, {})
+    plugins: await getSemanticPlugins(context, {}),
   };
 }
 
