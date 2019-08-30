@@ -266,9 +266,8 @@ export default async (userConfig: Configuration) => {
         await writePkg(location, pkgWithConfig);
         await npmPublish({ pkgRoot: location }, pkgWithConfig, context);
         await writePkg(location, pkg);
+        await GithubRelease.publish(githubReleaseConfig, rootContext);
       }
-
-      await GithubRelease.publish(githubReleaseConfig, rootContext);
 
       await promisifyPlugin('success', updatedNames, packageContexts);
       // await GithubRelease.success(githubReleaseConfig, rootContext);
