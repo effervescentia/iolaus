@@ -66,3 +66,22 @@
 
 #### :link: Dependency Updates:
 - **update**: upgrade `@iolaus/core` from `v1.0.1` -> `v1.0.2`
+
+## (2019-12-31)
+
+### @iolaus/common v1.0.3 (@iolaus/common-v1.0.3)
+
+#### :bug: Bug Fixes:
+- **npm**: set .npmrc file before publishing (6cfefe1c652cc0e91c180e3c3028a14fdf618403)
+
+### @iolaus/core v1.0.3 (@iolaus/core-v1.0.3)
+
+#### :bug: Bug Fixes:
+- **npm**: set .npmrc file before publishing (6cfefe1c652cc0e91c180e3c3028a14fdf618403)
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/common` from `v1.0.2` -> `v1.0.3`
+
+### iolaus v1.0.3 (iolaus-v1.0.3)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.2` -> `v1.0.3`

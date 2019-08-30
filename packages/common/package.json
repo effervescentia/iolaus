@@ -1,6 +1,6 @@
 {
   "name": "@iolaus/common",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An opinionated semantic versioning system for lerna.",
   "main": "build/main/index.js",
   "repository": "https://github.com/effervescentia/iolaus.git",
