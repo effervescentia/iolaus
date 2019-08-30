@@ -19,13 +19,19 @@ async function main() {
       process.cwd()
     )
     .option('-b --branch [branch]', 'set the branch to release from', 'master')
+    .option(
+      '-r --registry [npm registry]',
+      'set npm registry url',
+      'https://registry.npmjs.org/'
+    )
     .option('-d --dry-run', 'skip any steps past "generateNotes"')
-    .action(async (_, { branch, config, ...argOptions }) => {
+    .action(async (_, { branch, config, registry, ...argOptions }) => {
       try {
         const res = await cfg.load(config).catch(() => cfg.search(config));
         const options = {
           ...(res ? res.config : {}),
           ...(branch && { branch }),
+          ...(registry && { npmRegistry: registry }),
           ...('dryRun' in argOptions && { dryRun: argOptions.dryRun }),
         };
 

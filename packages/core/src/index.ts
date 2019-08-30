@@ -31,8 +31,8 @@ import {
 } from './utils';
 
 const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
+const RELEASE_ASSETS = ['packages/*/package.json', 'CHANGELOG.md'];
 const DEFAULT_CONFIG: Configuration = {
-  assets: ['packages/*/package.json', 'CHANGELOG.md'],
   branch: 'master',
   npmRegistry: 'https://registry.npmjs.org/',
   releaseAssets: [],
@@ -58,7 +58,7 @@ export default async (userConfig: Configuration) => {
     ...userConfig,
   };
   const gitReleaseConfig: GitRelease.Config = {
-    assets: config.assets,
+    assets: [],
   };
 
   const cwd = process.cwd();
@@ -200,7 +200,7 @@ export default async (userConfig: Configuration) => {
 
     await promisifyPlugin('prepare', updatedNames, packageContexts);
 
-    await git(cwd).add(gitReleaseConfig.assets);
+    await git(cwd).add(RELEASE_ASSETS);
     await git(cwd).commit(
       `chore(release): release packages [skip ci]\n${updatedNames
         .map(
@@ -311,7 +311,6 @@ export default async (userConfig: Configuration) => {
 };
 
 async function hijackSemanticRelease({
-  assets,
   releaseAssets,
   npmRegistry,
   ...config

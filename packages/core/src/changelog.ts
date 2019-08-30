@@ -179,7 +179,7 @@ function addEntriesToChangelog(
 
   if (entries) {
     const { emoji, title } = COMMITS[type];
-    changelog += `\n#### ${emoji} ${title}:`;
+    changelog += `\n#### ${emoji} ${title}\n`;
     entries.forEach(entry => {
       changelog += `\n- ${entry}`;
     });
