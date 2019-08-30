@@ -47,3 +47,22 @@
 
 #### :link: Dependency Updates:
 - **update**: upgrade `@iolaus/core` from `v1.0.0` -> `v1.0.1`
+
+## (2019-12-31)
+
+### @iolaus/common v1.0.2 (@iolaus/common-v1.0.2)
+
+#### :bug: Bug Fixes:
+- **release**: force a release with the new workflow (047cddbafcec35ff3901149d987b8b22e15c4976)
+
+### @iolaus/core v1.0.2 (@iolaus/core-v1.0.2)
+
+#### :bug: Bug Fixes:
+- **release**: force a release with the new workflow (047cddbafcec35ff3901149d987b8b22e15c4976)
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/common` from `v1.0.1` -> `v1.0.2`
+
+### iolaus v1.0.2 (iolaus-v1.0.2)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.1` -> `v1.0.2`
