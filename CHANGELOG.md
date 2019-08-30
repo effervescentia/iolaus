@@ -123,3 +123,16 @@
 
 #### :link: Dependency Updates:
 - **update**: upgrade `@iolaus/core` from `v1.0.4` -> `v1.0.5`
+
+## (2019-12-31)
+
+### @iolaus/core v1.0.6 (@iolaus/core-v1.0.6)
+
+#### :bug: Bug Fixes:
+- **tagging**: specify the fs for isomorphic-git (a8596d987a0aa654e43250bf45a999e8eca261ef)
+- **changelog**: better changelog and commit message on release (b5a96be2f0f5386fb778019db249ce6d29f5be24)
+
+### iolaus v1.0.6 (iolaus-v1.0.6)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.5` -> `v1.0.6`
