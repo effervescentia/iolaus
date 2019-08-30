@@ -5,6 +5,7 @@ import GitRelease from '@semantic-release/git';
 import GithubRelease from '@semantic-release/github';
 import npmPublish from '@semantic-release/npm/lib/publish';
 import fs from 'fs';
+import isomorphicGit from 'isomorphic-git';
 import template from 'lodash.template';
 import path from 'path';
 import readPkg from 'read-pkg';
@@ -220,8 +221,21 @@ export default async (userConfig: Configuration) => {
     if (config.dryRun) {
       rootContext.logger.warn('Skip pushing changelog and version update');
     } else {
-      await push(repositoryUrl, rootContext);
-      rootContext.logger.success('Pushed tags and commits');
+      await isomorphicGit.push({
+        dir: cwd,
+        ref: config.branch,
+        token: process.env.GH_TOKEN
+      });
+      await Promise.all(
+        updatedNames.map(pkgName =>
+          isomorphicGit.push({
+            dir: cwd,
+            ref: packageContexts.get(pkgName).context.nextRelease.gitTag,
+            token: process.env.GH_TOKEN
+          })
+        )
+      );
+      rootContext.logger.success('Pushed tags, commits and changelog');
     }
 
     try {
