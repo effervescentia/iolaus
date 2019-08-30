@@ -21,31 +21,10 @@ jobs:
         env:
           COMMIT_FILTER: "\\[skip ci\\]"
 
-      - name: Rehydrate .yarn/ (commit)
-        uses: actions/download-artifact@1.0.0
-        continue-on-error: true
-        with:
-          name: "yarn_cache-*-${{ github.sha }}"
-          path: ~/.yarn
-
-      - name: Rehydrate .yarn/ (ref)
-        uses: actions/download-artifact@1.0.0
-        continue-on-error: true
-        if: failure()
-        with:
-          name: "yarn_cache-${{ github.ref }}-*"
-          path: ~/.yarn
-
       - name: Install Node Dependencies
         uses: Borales/actions-yarn@1.1.0
         with:
           args: install
-
-      - name: Cache .yarn/ (ref)
-        uses: actions/upload-artifact@1.0.0
-        with:
-          name: yarn_cache-${{ github.ref }}-${{ github.sha }}
-          path: ~/.yarn
 
       - name: Setup Monorepo Links
         uses: Borales/actions-yarn@1.1.0
