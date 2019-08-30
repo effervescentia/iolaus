@@ -78,7 +78,6 @@ export default async (userConfig: Configuration) => {
     const githubReleaseConfig: GithubRelease.Config = {
       assets: config.releaseAssets,
       failComment: false,
-      githubUrl: repositoryUrl,
       labels: ['iolaus'],
       releasedLabels: ['released'],
       successComment: false
