@@ -202,9 +202,13 @@ export default async (userConfig: Configuration) => {
 
     await promisifyPlugin('prepare', updatedNames, packageContexts);
 
+    const publishablePackages = updatedNames.filter(
+      name => !graph.get(name).pkg.private
+    );
+
     await git(cwd).add(RELEASE_ASSETS);
     await git(cwd).commit(
-      `chore(release): release packages [skip ci]\n${updatedNames
+      `chore(release): release packages [skip ci]\n${publishablePackages
         .map(
           pkgName =>
             `\n- ${pkgName} -> v${
@@ -214,7 +218,7 @@ export default async (userConfig: Configuration) => {
         .join('')}`
     );
 
-    for (const pkgName of updatedNames) {
+    for (const pkgName of publishablePackages) {
       const { context } = packageContexts.get(pkgName);
       const nextTag = context.nextRelease.gitTag;
 
@@ -237,7 +241,7 @@ export default async (userConfig: Configuration) => {
         token: process.env.GH_TOKEN,
       });
       await Promise.all(
-        updatedNames.map(pkgName =>
+        publishablePackages.map(pkgName =>
           isomorphicGit.push({
             dir: cwd,
             fs,
@@ -250,7 +254,7 @@ export default async (userConfig: Configuration) => {
     }
 
     try {
-      for (const pkgName of updatedNames) {
+      for (const pkgName of publishablePackages) {
         const { location, context, plugins } = packageContexts.get(pkgName);
 
         const releases = await plugins.publish(context);
@@ -294,11 +298,11 @@ export default async (userConfig: Configuration) => {
         });
       }
 
-      await promisifyPlugin('success', updatedNames, packageContexts);
+      await promisifyPlugin('success', publishablePackages, packageContexts);
     } catch (err) {
       // tslint:disable-next-line: no-console
       console.error(err);
-      await promisifyPlugin('fail', updatedNames, packageContexts);
+      await promisifyPlugin('fail', publishablePackages, packageContexts);
       throw err;
     }
   } catch (err) {
