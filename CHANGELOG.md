@@ -104,3 +104,22 @@
 
 #### :link: Dependency Updates:
 - **update**: upgrade `@iolaus/core` from `v1.0.3` -> `v1.0.4`
+
+## (2019-12-31)
+
+### @iolaus/common v1.0.5 (@iolaus/common-v1.0.5)
+
+#### :bug: Bug Fixes:
+- **github**: actually use the correct context when releasing (784d18504e590485ef376e98b346656412179896)
+
+### @iolaus/core v1.0.5 (@iolaus/core-v1.0.5)
+
+#### :bug: Bug Fixes:
+- **github**: actually use the correct context when releasing (784d18504e590485ef376e98b346656412179896)
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/common` from `v1.0.4` -> `v1.0.5`
+
+### iolaus v1.0.5 (iolaus-v1.0.5)
+
+#### :link: Dependency Updates:
+- **update**: upgrade `@iolaus/core` from `v1.0.4` -> `v1.0.5`

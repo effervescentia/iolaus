@@ -1,6 +1,6 @@
 {
   "name": "iolaus",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An opinionated semantic versioning system for lerna.",
   "bin": "index.js",
   "repository": "https://github.com/effervescentia/iolaus.git",
@@ -10,7 +10,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@iolaus/core": "1.0.4",
+    "@iolaus/core": "1.0.5",
     "commander": "^2.20.0",
     "cosmiconfig": "^5.2.1",
     "read-pkg": "^5.1.1"
