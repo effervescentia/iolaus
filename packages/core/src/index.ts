@@ -31,7 +31,7 @@ import {
 } from './utils';
 
 const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
-const RELEASE_ASSETS = ['packages/*/package.json', 'CHANGELOG.md'];
+const RELEASE_ASSETS = ['**/package.json', 'CHANGELOG.md'];
 const DEFAULT_CONFIG: Configuration = {
   branch: 'master',
   npmRegistry: 'https://registry.npmjs.org/',
