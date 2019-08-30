@@ -2,7 +2,7 @@
   "name": "@iolaus/common",
   "description": "An opinionated semantic versioning system for lerna.",
   "keywords": [],
-  "version": "1.1.1",
+  "version": "1.1.2",
   "engines": {
     "node": ">=8.9"
   },

@@ -2,6 +2,29 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`iolaus-v1.3.4`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.3.4), [`@iolaus/common-v1.1.2`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/common-v1.1.2), [`@iolaus/core-v1.3.4`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.3.4) (2019-12-31)
+
+### `iolaus`
+
+#### :bug: Bug Fixes
+
+- **pkg**: align packages again ([57e2ca61](https://github.com/effervescentia/iolaus/commit/57e2ca618e5c14d7bccdf4ac1ba69bbbb8b51876))
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.3.3` -> `v1.3.4`
+
+### `@iolaus/common`
+
+#### :bug: Bug Fixes
+
+- **pkg**: align packages again ([57e2ca61](https://github.com/effervescentia/iolaus/commit/57e2ca618e5c14d7bccdf4ac1ba69bbbb8b51876))
+
+### `@iolaus/core`
+
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/common` from `v1.1.1` -> `v1.1.2`
+
 ## [`@iolaus/core-v1.3.3`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.3.3), [`iolaus-v1.3.3`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.3.3) (2019-12-31)
 
 ### `@iolaus/core`
