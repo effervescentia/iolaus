@@ -2,6 +2,20 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`@iolaus/core-v1.4.2`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.4.2), [`iolaus-v1.4.2`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.4.2) (2019-8-31)
+
+### `@iolaus/core`
+
+#### :bug: Bug Fixes
+
+- **changelog**: fix changelog formatting and date generation ([d6b8d154](https://github.com/effervescentia/iolaus/commit/d6b8d154c303c9ea008f57ec9aee9b8819041b63))
+
+### `iolaus`
+
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.4.1` -> `v1.4.2`
+
 ## [`iolaus-v1.4.1`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.4.1), [`@iolaus/core-v1.4.1`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.4.1) (2019-08-30)
 
 ### `iolaus`
