@@ -2,6 +2,24 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`iolaus-v1.4.1`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.4.1), [`@iolaus/core-v1.4.1`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.4.1) (2019-12-31)
+
+### `iolaus`
+
+#### :bug: Bug Fixes
+
+- use repository options when pushing tags ([4264415e](https://github.com/effervescentia/iolaus/commit/4264415e24f667842a29eb67f1d2adb3c264eccd))
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.4.0` -> `v1.4.1`
+
+### `@iolaus/core`
+
+#### :bug: Bug Fixes
+
+- pull extra value out of semantic config ([d74e8be9](https://github.com/effervescentia/iolaus/commit/d74e8be9e3936debc8536e1b671ac8f0b80ac760))
+- use repository options when pushing tags ([4264415e](https://github.com/effervescentia/iolaus/commit/4264415e24f667842a29eb67f1d2adb3c264eccd))
+
 ## [`@iolaus/core-v1.4.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.4.0), [`iolaus-v1.4.0`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.4.0) (2019-12-31)
 
 ### `@iolaus/core`
