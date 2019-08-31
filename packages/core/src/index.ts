@@ -316,6 +316,7 @@ export default async (userConfig: Configuration) => {
 };
 
 async function hijackSemanticRelease({
+  githubRepository,
   releaseAssets,
   npmRegistry,
   ...config
