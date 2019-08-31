@@ -81,6 +81,7 @@ export async function generateChangelog(
   pkgContexts: Map<string, PackageContext>,
   updatedPkgs: string[]
 ): Promise<{ readonly file: string; readonly content: string }> {
+  const date = new Date();
   const changelogFile = path.join(directory, 'CHANGELOG.md');
   // tslint:disable-next-line: no-let
   let nextChangelogEntry = '';
@@ -91,7 +92,8 @@ export async function generateChangelog(
 
       return `[\`${gitTag}\`](${repositoryUrl}/releases/tag/${gitTag})`;
     })
-    .join(', ')} (2019-12-31)`;
+    .join(', ')} (${date.getFullYear()}-${date.getMonth() +
+    1}-${date.getDate()})`;
 
   updatedPkgs.forEach(pkgName => {
     const { context } = pkgContexts.get(pkgName);
@@ -144,13 +146,14 @@ export async function generateChangelog(
     });
 
     if (HIDDEN_TYPES.some(type => changelogEntries.has(type))) {
-      nextChangelogEntry += '<details><summary>Additional Details</summary><p>';
+      nextChangelogEntry +=
+        '\n\n<details><summary>Additional Details</summary><p>\n';
 
       HIDDEN_TYPES.forEach(type => {
         nextChangelogEntry += addEntriesToChangelog(changelogEntries, type);
       });
 
-      nextChangelogEntry += '</p></details>';
+      nextChangelogEntry += '\n\n</p></details>';
     }
   });
 

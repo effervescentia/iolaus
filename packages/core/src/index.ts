@@ -284,11 +284,13 @@ export default async (userConfig: Configuration) => {
           graph.get(pkgName).localDependencies.keys()
         ).filter(depName => updatedNames.includes(depName));
         const dependencyReleaseNotes = updatedDependencies.length
-          ? `\n\n### Dependency Updates\n${updatedDependencies.map(depName => {
-              const { context: depContext } = packageContexts.get(depName);
+          ? `### Dependency Updates\n${updatedDependencies
+              .map(depName => {
+                const { context: depContext } = packageContexts.get(depName);
 
-              return `**automatic**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
-            })}`
+                return `\n* **automatic**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
+              })
+              .join('')}`
           : '';
 
         await GithubRelease.publish(githubReleaseConfig, {
