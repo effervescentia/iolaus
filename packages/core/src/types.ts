@@ -6,6 +6,8 @@ export interface Configuration extends SemanticRelease.Configuration {
   readonly releaseAssets: string[];
   /** The npm registry on which packages will be published */
   readonly npmRegistry: string;
+  /** The github repository which holds the source code for this project */
+  readonly githubRepository: string;
 }
 
 export interface PackageContext {

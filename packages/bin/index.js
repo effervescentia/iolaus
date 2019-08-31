@@ -24,22 +24,26 @@ async function main() {
       'set npm registry url',
       'https://registry.npmjs.org/'
     )
+    .option('-p --repository [github repository]', 'set github repository url')
     .option('-d --dry-run', 'skip any steps past "generateNotes"')
-    .action(async (_, { branch, config, registry, ...argOptions }) => {
-      try {
-        const res = await cfg.load(config).catch(() => cfg.search(config));
-        const options = {
-          ...(res ? res.config : {}),
-          ...(branch && { branch }),
-          ...(registry && { npmRegistry: registry }),
-          ...('dryRun' in argOptions && { dryRun: argOptions.dryRun }),
-        };
+    .action(
+      async (_, { branch, config, registry, repository, ...argOptions }) => {
+        try {
+          const res = await cfg.load(config).catch(() => cfg.search(config));
+          const options = {
+            ...(res ? res.config : {}),
+            ...(branch && { branch }),
+            ...(registry && { npmRegistry: registry }),
+            ...(repository && { githubRepository: repository }),
+            ...('dryRun' in argOptions && { dryRun: argOptions.dryRun }),
+          };
 
-        releasePackages(options);
-      } catch (err) {
-        console.error(`unable to load file: "${config}"\n\n`, err);
+          releasePackages(options);
+        } catch (err) {
+          console.error(`unable to load file: "${config}"\n\n`, err);
+        }
       }
-    });
+    );
 
   // commander
   //   .command('init')

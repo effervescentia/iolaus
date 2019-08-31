@@ -34,6 +34,7 @@ const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
 const RELEASE_ASSETS = ['**/package.json', 'CHANGELOG.md'];
 const DEFAULT_CONFIG: Configuration = {
   branch: 'master',
+  githubRepository: null,
   npmRegistry: 'https://registry.npmjs.org/',
   releaseAssets: [],
 };
@@ -75,6 +76,8 @@ export default async (userConfig: Configuration) => {
       '@semantic-release/commit-analyzer',
       '@semantic-release/release-notes-generator',
     ]);
+    const githubUrl =
+      config.githubRepository || rootContext.options.repositoryUrl;
 
     const githubReleaseConfig: GithubRelease.Config = {
       assets: config.releaseAssets,
@@ -186,10 +189,7 @@ export default async (userConfig: Configuration) => {
       })
     );
 
-    const repositoryUrl = rootContext.options.repositoryUrl.replace(
-      /\.git$/,
-      ''
-    );
+    const repositoryUrl = githubUrl.replace(/\.git$/, '');
     const { file: changelogFile, content: changelog } = await generateChangelog(
       cwd,
       repositoryUrl,
@@ -239,6 +239,7 @@ export default async (userConfig: Configuration) => {
         fs,
         remoteRef: config.branch,
         token: process.env.GH_TOKEN,
+        url: githubUrl,
       });
       await Promise.all(
         publishablePackages.map(pkgName =>
@@ -247,6 +248,7 @@ export default async (userConfig: Configuration) => {
             fs,
             ref: packageContexts.get(pkgName).context.nextRelease.gitTag,
             token: process.env.GH_TOKEN,
+            url: githubUrl,
           })
         )
       );
