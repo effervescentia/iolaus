@@ -1,66 +1,46 @@
 // tslint:disable:no-implicit-dependencies
 import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
-import GitRelease from '@semantic-release/git';
+// import GitRelease from '@semantic-release/git';
 import GithubRelease from '@semantic-release/github';
-import npmPublish from '@semantic-release/npm/lib/publish';
 import npmSetAuth from '@semantic-release/npm/lib/set-npmrc-auth';
 import fs from 'fs';
-import * as isomorphicGit from 'isomorphic-git';
-import template from 'lodash.template';
-import path from 'path';
-import readPkg from 'read-pkg';
-import semanticRelease, {
-  Context,
-  NextRelease,
-  Plugins,
-} from 'semantic-release';
-import { getGitHead } from 'semantic-release/lib/git';
-import semver, { ReleaseType } from 'semver';
-import writePkg from 'write-pkg';
+import { ReleaseType } from 'semver';
 import { generateChangelog } from './changelog';
-import { getConfig, getContext } from './context-sink';
-import { initializeRelease } from './release';
+import { updatePackageVersions } from './package';
+import {
+  generateNextRelease,
+  initializeRelease,
+  releasePackage,
+} from './release';
+import { createTag, pushTags } from './tags';
 import { Configuration, PackageContext } from './types';
 import {
   applyUpdatesToDependents,
   git,
+  hijackSemanticRelease,
+  promisifyPlugin,
   trackUpdates,
-  transformOptions,
   transformPlugins,
 } from './utils';
 
-const DEPENDENCY_KEY_PATTERN = /^([a-z]*D|d)ependencies$/;
 const RELEASE_ASSETS = ['**/package.json', 'CHANGELOG.md'];
 const DEFAULT_CONFIG: Configuration = {
   branch: 'master',
   githubRepository: null,
+  initial: false,
   npmRegistry: 'https://registry.npmjs.org/',
   releaseAssets: [],
 };
-
-function promisifyPlugin<T = void>(
-  plugin: keyof Plugins,
-  packageNames: string[],
-  packageContexts: Map<string, PackageContext>
-): Promise<T[]> {
-  return Promise.all<T>(
-    packageNames.map(pkgName => {
-      const { context, plugins } = packageContexts.get(pkgName);
-
-      return plugins[plugin](context) as Promise<any>;
-    })
-  );
-}
 
 export default async (userConfig: Configuration) => {
   const config = {
     ...DEFAULT_CONFIG,
     ...userConfig,
   };
-  const gitReleaseConfig: GitRelease.Config = {
-    assets: [],
-  };
+  // const gitReleaseConfig: GitRelease.Config = {
+  //   assets: [],
+  // };
 
   const cwd = process.cwd();
 
@@ -92,8 +72,8 @@ export default async (userConfig: Configuration) => {
     rootContext.logger.await('verifying packages');
 
     if (!config.dryRun) {
-      await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
-      await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
+      // await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
+      // await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
     }
 
     for (const pkgName of packageNames) {
@@ -125,68 +105,26 @@ export default async (userConfig: Configuration) => {
 
     const updatedNames = Array.from(packageUpdates.keys());
     if (!updatedNames.length) {
-      rootContext.logger.warn('no releases found, exiting now');
-      return;
-    }
-
-    for (const pkgName of updatedNames) {
-      const type = packageUpdates.get(pkgName);
-      const { context, plugins } = packageContexts.get(pkgName);
-
-      // tslint:disable-next-line: no-object-mutation no-object-literal-type-assertion
-      context.nextRelease = {
-        gitHead: await getGitHead(context),
-        type,
-      } as NextRelease;
-
-      await plugins.verifyRelease(context);
-
-      // tslint:disable: no-object-mutation
-      context.nextRelease.notes = await plugins.generateNotes(context);
-
-      const version = context.lastRelease.version
-        ? semver.inc(context.lastRelease.version, type)
-        : '1.0.0';
-      context.nextRelease.version = version;
-      context.nextRelease.gitTag = template(context.options.tagFormat)({
-        version,
-      });
-      // tslint:enable: no-object-mutation
+      if (config.initial) {
+      } else {
+        rootContext.logger.warn('no releases found, exiting now');
+        return;
+      }
     }
 
     await Promise.all(
-      updatedNames.map(async pkgName => {
-        const { localDependencies } = graph.get(pkgName);
-        const { context, location } = packageContexts.get(pkgName);
-        const updatedDependencies = Array.from(localDependencies.keys()).filter(
-          depName => updatedNames.includes(depName)
-        );
+      updatedNames.map(pkgName =>
+        generateNextRelease(
+          packageUpdates.get(pkgName),
+          packageContexts.get(pkgName)
+        )
+      )
+    );
 
-        const pkgLocation = path.join(location, 'package.json');
-        const pkgString = await fs.promises.readFile(pkgLocation, 'utf8');
-
-        const pkg = JSON.parse(pkgString);
-
-        // tslint:disable-next-line: no-object-mutation
-        pkg.version = context.nextRelease.version;
-
-        Object.keys(pkg)
-          .filter(key => DEPENDENCY_KEY_PATTERN.test(key))
-          .forEach(pkgKey =>
-            updatedDependencies.forEach(depName => {
-              const pkgDeps = pkg[pkgKey];
-              const nextVersion = packageContexts.get(depName).context
-                .nextRelease.version;
-
-              if (depName in pkgDeps && pkgDeps[depName] !== nextVersion) {
-                // tslint:disable-next-line: no-object-mutation
-                pkgDeps[depName] = nextVersion;
-              }
-            })
-          );
-
-        await writePkg(path.join(location, 'package.json'), pkg);
-      })
+    await Promise.all(
+      updatedNames.map(pkgName =>
+        updatePackageVersions(pkgName, graph, packageContexts, updatedNames)
+      )
     );
 
     const repositoryUrl = githubUrl.replace(/\.git$/, '');
@@ -218,88 +156,36 @@ export default async (userConfig: Configuration) => {
         .join('')}`
     );
 
-    for (const pkgName of publishablePackages) {
-      const { context } = packageContexts.get(pkgName);
-      const nextTag = context.nextRelease.gitTag;
-
-      await isomorphicGit.tag({
-        dir: cwd,
-        fs,
-        ref: nextTag,
-      });
-      rootContext.logger.success(`Created tag ${nextTag}`);
-    }
+    await Promise.all(
+      publishablePackages.map(pkgName =>
+        createTag(packageContexts.get(pkgName), rootContext, cwd)
+      )
+    );
 
     if (config.dryRun) {
       rootContext.logger.warn('Skip release and publish - this is a dry run');
       return;
     } else {
-      await isomorphicGit.push({
-        dir: cwd,
-        fs,
-        remoteRef: config.branch,
-        token: process.env.GH_TOKEN,
-        url: githubUrl,
-      });
-      await Promise.all(
-        publishablePackages.map(pkgName =>
-          isomorphicGit.push({
-            dir: cwd,
-            fs,
-            ref: packageContexts.get(pkgName).context.nextRelease.gitTag,
-            token: process.env.GH_TOKEN,
-            url: githubUrl,
-          })
-        )
+      await pushTags(
+        cwd,
+        config,
+        githubUrl,
+        publishablePackages,
+        packageContexts
       );
       rootContext.logger.success('Pushed tags, commits and changelog');
     }
 
     try {
       for (const pkgName of publishablePackages) {
-        const { location, context, plugins } = packageContexts.get(pkgName);
-
-        const releases = await plugins.publish(context);
-
-        // tslint:disable-next-line: no-object-mutation
-        context.releases = releases;
-
-        const { _id, readme, ...pkg } = (await readPkg({
-          cwd: location,
-        })) as Record<string, any>;
-
-        const pkgWithConfig = {
-          ...pkg,
-          publishConfig: {
-            ...pkg.publishConfig,
-            registry: config.npmRegistry,
-          },
-        };
-
-        await writePkg(location, pkgWithConfig);
-        await npmPublish({ pkgRoot: location }, pkgWithConfig, context);
-        await writePkg(location, pkg);
-
-        const updatedDependencies = Array.from(
-          graph.get(pkgName).localDependencies.keys()
-        ).filter(depName => updatedNames.includes(depName));
-        const dependencyReleaseNotes = updatedDependencies.length
-          ? `### Dependency Updates\n${updatedDependencies
-              .map(depName => {
-                const { context: depContext } = packageContexts.get(depName);
-
-                return `\n* **automatic**: upgrade \`${depName}\` from \`v${depContext.lastRelease.version}\` -> \`v${depContext.nextRelease.version}\``;
-              })
-              .join('')}`
-          : '';
-
-        await GithubRelease.publish(githubReleaseConfig, {
-          ...context,
-          nextRelease: {
-            ...context.nextRelease,
-            notes: context.nextRelease.notes + dependencyReleaseNotes,
-          },
-        });
+        await releasePackage(
+          packageContexts,
+          pkgName,
+          config,
+          graph,
+          updatedNames,
+          githubReleaseConfig
+        );
       }
 
       await promisifyPlugin('success', publishablePackages, packageContexts);
@@ -316,30 +202,3 @@ export default async (userConfig: Configuration) => {
     process.exit(-1);
   }
 };
-
-async function hijackSemanticRelease({
-  githubRepository,
-  releaseAssets,
-  npmRegistry,
-  ...config
-}: Configuration): Promise<Context> {
-  await semanticRelease(
-    {
-      ...config,
-      dryRun: true,
-      plugins: [path.resolve(__dirname, 'context-sink')],
-    },
-    {
-      env: process.env,
-    } as any
-  );
-
-  try {
-    return transformOptions(getContext(), () => ({
-      ...getConfig(),
-      ...config,
-    }));
-  } catch {
-    throw new Error('unable to run semantic release to setup release');
-  }
-}

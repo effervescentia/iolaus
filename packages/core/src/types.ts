@@ -8,6 +8,11 @@ export interface Configuration extends SemanticRelease.Configuration {
   readonly npmRegistry: string;
   /** The github repository which holds the source code for this project */
   readonly githubRepository: string;
+  /**
+   * Whether an initial release should be created when no tags are
+   * found and when no release is indicated by commit messages
+   */
+  readonly initial?: boolean;
 }
 
 export interface PackageContext {
