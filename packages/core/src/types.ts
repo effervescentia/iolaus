@@ -1,5 +1,9 @@
 // tslint:disable:no-implicit-dependencies
 import * as SemanticRelease from 'semantic-release';
+import * as semver from 'semver';
+import { INTIAL_REALEASE_TYPE } from './constants';
+
+export type ReleaseType = semver.ReleaseType | typeof INTIAL_REALEASE_TYPE;
 
 export interface Configuration extends SemanticRelease.Configuration {
   /** An array of globs for assets that should be packaged in the github release */
@@ -8,6 +12,11 @@ export interface Configuration extends SemanticRelease.Configuration {
   readonly npmRegistry: string;
   /** The github repository which holds the source code for this project */
   readonly githubRepository: string;
+  /**
+   * Whether an initial release should be created when no tags are
+   * found and when no release is indicated by commit messages
+   */
+  readonly initial?: boolean;
 }
 
 export interface PackageContext {

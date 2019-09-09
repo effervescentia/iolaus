@@ -1,5 +1,6 @@
 import { Configuration, Context } from 'semantic-release';
 import { Signale } from 'signale';
+import { PKG_NAME } from './constants';
 import { Sink } from './types';
 
 // tslint:disable-next-line: no-let
@@ -23,7 +24,7 @@ export function verifyConditions(
   context: Context
 ): void {
   // tslint:disable: no-object-mutation
-  (context as any).logger = new Signale({ scope: 'iolaus' });
+  (context as any).logger = new Signale({ scope: PKG_NAME });
   GLOBAL_SINK = {
     config,
     context,

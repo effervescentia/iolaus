@@ -2,12 +2,23 @@
 import { Commit } from '@iolaus/common';
 import PackageGraph from '@lerna/package-graph';
 import cosmiconfig from 'cosmiconfig';
+import path from 'path';
 import readPkg from 'read-pkg';
-import { Configuration, Context, PluginArray } from 'semantic-release';
+import semanticRelease, {
+  Configuration,
+  Context,
+  PluginArray,
+  Plugins,
+} from 'semantic-release';
 import getSemanticPlugins from 'semantic-release/lib/plugins';
-import { ReleaseType } from 'semver';
 import simpleGit from 'simple-git/promise';
-import { PackageContext } from './types';
+import { PKG_NAME } from './constants';
+import { getConfig, getContext } from './context-sink';
+import {
+  Configuration as AppConfiguration,
+  PackageContext,
+  ReleaseType,
+} from './types';
 
 const AFFECTED_PKGS_REGEX = /\baffects: ([^, ]*(?:,[\r\n ][^, ]*)*)/m;
 export const SEMVER_TYPES: ReleaseType[] = [
@@ -21,6 +32,34 @@ export const SEMVER_TYPES: ReleaseType[] = [
 ];
 
 export const git = cwd => simpleGit(cwd);
+
+export async function hijackSemanticRelease({
+  githubRepository,
+  releaseAssets,
+  npmRegistry,
+  initial,
+  ...config
+}: AppConfiguration): Promise<Context> {
+  await semanticRelease(
+    {
+      ...config,
+      dryRun: true,
+      plugins: [path.resolve(__dirname, 'context-sink')],
+    },
+    {
+      env: process.env,
+    } as any
+  );
+
+  try {
+    return transformOptions(getContext(), () => ({
+      ...getConfig(),
+      ...config,
+    }));
+  } catch {
+    throw new Error('unable to run semantic release to setup release');
+  }
+}
 
 export function transformOptions(
   context: Context,
@@ -40,6 +79,20 @@ export function transformPlugins(
     ...options,
     plugins: transform(context.options.plugins),
   }));
+}
+
+export function promisifyPlugin<T = void>(
+  plugin: keyof Plugins,
+  packageNames: string[],
+  packageContexts: Map<string, PackageContext>
+): Promise<T[]> {
+  return Promise.all<T>(
+    packageNames.map(pkgName => {
+      const { context, plugins } = packageContexts.get(pkgName);
+
+      return plugins[plugin](context) as Promise<any>;
+    })
+  );
 }
 
 export function maxSemver(lhs: ReleaseType, rhs: ReleaseType): ReleaseType {
@@ -109,7 +162,7 @@ export async function createPackageContext(
   location: string,
   baseContext: Context
 ): Promise<PackageContext> {
-  const config = await cosmiconfig('iolaus', {
+  const config = await cosmiconfig(PKG_NAME, {
     stopDir: cwd,
   }).search(location);
 
