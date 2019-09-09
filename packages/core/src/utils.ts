@@ -11,10 +11,14 @@ import semanticRelease, {
   Plugins,
 } from 'semantic-release';
 import getSemanticPlugins from 'semantic-release/lib/plugins';
-import { ReleaseType } from 'semver';
 import simpleGit from 'simple-git/promise';
+import { PKG_NAME } from './constants';
 import { getConfig, getContext } from './context-sink';
-import { Configuration as AppConfiguration, PackageContext } from './types';
+import {
+  Configuration as AppConfiguration,
+  PackageContext,
+  ReleaseType,
+} from './types';
 
 const AFFECTED_PKGS_REGEX = /\baffects: ([^, ]*(?:,[\r\n ][^, ]*)*)/m;
 export const SEMVER_TYPES: ReleaseType[] = [
@@ -33,6 +37,7 @@ export async function hijackSemanticRelease({
   githubRepository,
   releaseAssets,
   npmRegistry,
+  initial,
   ...config
 }: AppConfiguration): Promise<Context> {
   await semanticRelease(
@@ -157,7 +162,7 @@ export async function createPackageContext(
   location: string,
   baseContext: Context
 ): Promise<PackageContext> {
-  const config = await cosmiconfig('iolaus', {
+  const config = await cosmiconfig(PKG_NAME, {
     stopDir: cwd,
   }).search(location);
 

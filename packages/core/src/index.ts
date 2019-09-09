@@ -5,8 +5,8 @@ import { getPackages } from '@lerna/project';
 import GithubRelease from '@semantic-release/github';
 import npmSetAuth from '@semantic-release/npm/lib/set-npmrc-auth';
 import fs from 'fs';
-import { ReleaseType } from 'semver';
 import { generateChangelog } from './changelog';
+import { INTIAL_REALEASE_TYPE, PKG_NAME } from './constants';
 import { updatePackageVersions } from './package';
 import {
   generateNextRelease,
@@ -14,7 +14,7 @@ import {
   releasePackage,
 } from './release';
 import { createTag, pushTags } from './tags';
-import { Configuration, PackageContext } from './types';
+import { Configuration, PackageContext, ReleaseType } from './types';
 import {
   applyUpdatesToDependents,
   git,
@@ -62,7 +62,7 @@ export default async (userConfig: Configuration) => {
     const githubReleaseConfig: GithubRelease.Config = {
       assets: config.releaseAssets,
       failComment: false,
-      labels: ['iolaus'],
+      labels: [PKG_NAME],
       releasedLabels: ['released'],
       successComment: false,
     };
@@ -103,13 +103,16 @@ export default async (userConfig: Configuration) => {
       applyUpdatesToDependents(pkgName, graph, packageUpdates)
     );
 
+    if (config.initial) {
+      packageNames
+        .filter(pkgName => !packageUpdates.has(pkgName))
+        .forEach(pkgName => packageUpdates.set(pkgName, INTIAL_REALEASE_TYPE));
+    }
+
     const updatedNames = Array.from(packageUpdates.keys());
     if (!updatedNames.length) {
-      if (config.initial) {
-      } else {
-        rootContext.logger.warn('no releases found, exiting now');
-        return;
-      }
+      rootContext.logger.warn('no releases found, exiting now');
+      return;
     }
 
     await Promise.all(
@@ -144,23 +147,37 @@ export default async (userConfig: Configuration) => {
       name => !graph.get(name).pkg.private
     );
 
-    await git(cwd).add(RELEASE_ASSETS);
-    await git(cwd).commit(
-      `chore(release): release packages [skip ci]\n${publishablePackages
-        .map(
-          pkgName =>
-            `\n- ${pkgName} -> v${
-              packageContexts.get(pkgName).context.nextRelease.version
-            }`
-        )
-        .join('')}`
-    );
+    if (config.dryRun) {
+      rootContext.logger.warn(
+        'Skip git commit and tag creation - this is a dry run'
+      );
+      rootContext.logger.warn(
+        `Skipped tags:\n${publishablePackages
+          .map(
+            pkgName =>
+              `- ${packageContexts.get(pkgName).context.nextRelease.gitTag}`
+          )
+          .join('\n')}`
+      );
+    } else {
+      await git(cwd).add(RELEASE_ASSETS);
+      await git(cwd).commit(
+        `chore(release): release packages [skip ci]\n${publishablePackages
+          .map(
+            pkgName =>
+              `\n- ${pkgName} -> v${
+                packageContexts.get(pkgName).context.nextRelease.version
+              }`
+          )
+          .join('')}`
+      );
 
-    await Promise.all(
-      publishablePackages.map(pkgName =>
-        createTag(packageContexts.get(pkgName), rootContext, cwd)
-      )
-    );
+      await Promise.all(
+        publishablePackages.map(pkgName =>
+          createTag(packageContexts.get(pkgName), rootContext, cwd)
+        )
+      );
+    }
 
     if (config.dryRun) {
       rootContext.logger.warn('Skip release and publish - this is a dry run');

@@ -1,5 +1,9 @@
 // tslint:disable:no-implicit-dependencies
 import * as SemanticRelease from 'semantic-release';
+import * as semver from 'semver';
+import { INTIAL_REALEASE_TYPE } from './constants';
+
+export type ReleaseType = semver.ReleaseType | typeof INTIAL_REALEASE_TYPE;
 
 export interface Configuration extends SemanticRelease.Configuration {
   /** An array of globs for assets that should be packaged in the github release */

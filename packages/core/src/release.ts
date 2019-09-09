@@ -8,9 +8,10 @@ import { Context, NextRelease, Release } from 'semantic-release';
 import getCommits from 'semantic-release/lib/get-commits';
 import getLastRelease from 'semantic-release/lib/get-last-release';
 import { getGitHead } from 'semantic-release/lib/git';
-import semver, { ReleaseType } from 'semver';
+import semver from 'semver';
 import writePkg from 'write-pkg';
-import { Configuration, PackageContext } from './types';
+import { INTIAL_REALEASE_TYPE, INTIAL_VERSION } from './constants';
+import { Configuration, PackageContext, ReleaseType } from './types';
 import { commitFilter, createPackageContext } from './utils';
 
 export async function initializeRelease(
@@ -64,9 +65,10 @@ export async function generateNextRelease(
   // tslint:disable: no-object-mutation
   context.nextRelease.notes = await plugins.generateNotes(context);
 
-  const version = context.lastRelease.version
-    ? semver.inc(context.lastRelease.version, updateType)
-    : '1.0.0';
+  const version =
+    context.lastRelease.version && updateType !== INTIAL_REALEASE_TYPE
+      ? semver.inc(context.lastRelease.version, updateType)
+      : INTIAL_VERSION;
   context.nextRelease.version = version;
   context.nextRelease.gitTag = template(context.options.tagFormat)({
     version,

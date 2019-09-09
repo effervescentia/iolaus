@@ -26,6 +26,10 @@ async function main() {
     )
     .option('-p --repository [github repository]', 'set github repository url')
     .option('-d --dry-run', 'skip any steps past "generateNotes"')
+    .option(
+      '-i --initial',
+      'if any packages do not have an associated tagged release, create initial releases based off of their current versions'
+    )
     .action(
       async (_, { branch, config, registry, repository, ...argOptions }) => {
         try {
@@ -35,6 +39,7 @@ async function main() {
             ...(branch && { branch }),
             ...(registry && { npmRegistry: registry }),
             ...(repository && { githubRepository: repository }),
+            ...('initial' in argOptions && { initial: argOptions.initial }),
             ...('dryRun' in argOptions && { dryRun: argOptions.dryRun }),
           };
 

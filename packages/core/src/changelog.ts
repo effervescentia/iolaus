@@ -31,6 +31,7 @@ const HIDDEN_TYPES = [
 ];
 const ALL_TYPES = [...VISIBLE_TYPES, ...HIDDEN_TYPES];
 
+const ROCKET_EMOJI = ':rocket:';
 const COMMITS = {
   [CommitType.FEATURE]: {
     emoji: ':sparkles:',
@@ -100,9 +101,17 @@ export async function generateChangelog(
 
     nextChangelogEntry += `\n\n### \`${pkgName}\`\n`;
 
+    if (!context.lastRelease.version) {
+      nextChangelogEntry += `\n${ROCKET_EMOJI} **Initial Release** ${ROCKET_EMOJI}`;
+    }
+
     const updatedDependencies = Array.from(
       graph.get(pkgName).localDependencies.keys()
-    ).filter(depName => updatedPkgs.includes(depName));
+    ).filter(
+      depName =>
+        updatedPkgs.includes(depName) &&
+        pkgContexts.get(depName).context.lastRelease.version
+    );
 
     const changelogEntries = new Map<CommitType, string[]>(
       updatedDependencies.length
