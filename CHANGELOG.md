@@ -2,6 +2,23 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`iolaus-v1.5.1`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.5.1), [`@iolaus/core-v1.5.1`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.5.1) (2019-9-9)
+
+### `iolaus`
+
+#### :bug: Bug Fixes
+
+- allow using config file to provide options (#13) ([93796ad0](https://github.com/effervescentia/iolaus/commit/93796ad0e93409b9aebd0ee1f9cd68266d3a08fb))
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.5.0` -> `v1.5.1`
+
+### `@iolaus/core`
+
+#### :bug: Bug Fixes
+
+- allow using config file to provide options (#13) ([93796ad0](https://github.com/effervescentia/iolaus/commit/93796ad0e93409b9aebd0ee1f9cd68266d3a08fb))
+
 ## [`iolaus-v1.5.0`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.5.0), [`@iolaus/core-v1.5.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.5.0) (2019-9-9)
 
 ### `iolaus`
