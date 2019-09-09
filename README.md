@@ -71,8 +71,8 @@ You can provide configuration for `iolaus` using a configuration file like `.iol
 
 When running `iolaus` you can pass a number of flags to change its functionality.
 
-- `--config [config file]`, `-c`: the configuration file to read from, otherwise uses `cosmiconfig` to search from the working directory
-- `--branch [branch name]`, `-b`: the branch to run a release on, defaults to `'master'`
-- `--registry [registry url]`, `-r`: the `npm` registry to push to, defaults to `'https://registry.npmjs.org/'`
+- `--config`, `-c`: the configuration file to read from, otherwise uses `cosmiconfig` to search from the working directory
+- `--branch`, `-b`: the branch to run a release on, defaults to `'master'`
+- `--registry`, `-r`: the `npm` registry to push to, defaults to `'https://registry.npmjs.org/'`
 - `--dry-run`, `-d`: skip the release and tag generation. `CHANGELOG.md` and `package.json` files will be modified
 - `--initial`, `-i`: create initial releases for all packages with no previous git tag
