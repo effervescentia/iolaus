@@ -1,7 +1,7 @@
 // tslint:disable:no-implicit-dependencies
 import PackageGraph from '@lerna/package-graph';
 import { getPackages } from '@lerna/project';
-// import GitRelease from '@semantic-release/git';
+import GitRelease from '@semantic-release/git';
 import GithubRelease from '@semantic-release/github';
 import npmSetAuth from '@semantic-release/npm/lib/set-npmrc-auth';
 import fs from 'fs';
@@ -38,9 +38,9 @@ export default async (userConfig: Configuration) => {
     ...DEFAULT_CONFIG,
     ...userConfig,
   };
-  // const gitReleaseConfig: GitRelease.Config = {
-  //   assets: [],
-  // };
+  const gitReleaseConfig: GitRelease.Config = {
+    assets: [],
+  };
 
   const cwd = process.cwd();
 
@@ -72,8 +72,8 @@ export default async (userConfig: Configuration) => {
     rootContext.logger.await('verifying packages');
 
     if (!config.dryRun) {
-      // await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
-      // await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
+      await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
+      await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
     }
 
     for (const pkgName of packageNames) {
