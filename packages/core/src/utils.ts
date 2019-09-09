@@ -162,7 +162,7 @@ export async function createPackageContext(
   location: string,
   baseContext: Context
 ): Promise<PackageContext> {
-  const config = await cosmiconfig(PKG_NAME, {
+  const res = await cosmiconfig(PKG_NAME, {
     stopDir: cwd,
   }).search(location);
 
@@ -170,7 +170,7 @@ export async function createPackageContext(
     transformOptions(baseContext, options => ({
       ...options,
       tagFormat: `${pkgName}-${options.tagFormat}`,
-      ...config,
+      ...(res ? res.config : {}),
     })),
     // TODO: filter out base plugins that are re-declared in the child to preserve intended order
     basePlugins => basePlugins
