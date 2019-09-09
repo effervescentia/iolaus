@@ -4,7 +4,9 @@
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square)](https://lerna.js.org/)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square)](https://github.com/semantic-release/semantic-release)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
+
+[![Build Test and Release](https://github.com/effervescentia/iolaus/workflows/Build%2C%20Test%20and%20Release/badge.svg)](https://launch-editor.github.com/actions?workflowID=Build%2C%20Test%20and%20Release&nwo=effervescentia%2Fiolaus)
 
 Iolaus is an opinionated versioning system built to support large monorepos using `lerna` with independently versioned sub-components. Named after the hero who assisted Heracles in the fight against the Hydra of Lerna.
 
