@@ -5,109 +5,83 @@ import GitRelease from '@semantic-release/git';
 import GithubRelease from '@semantic-release/github';
 import npmSetAuth from '@semantic-release/npm/lib/set-npmrc-auth';
 import fs from 'fs';
+import * as SemanticRelease from 'semantic-release';
+import analyzeCommits from './analyze';
 import { generateChangelog } from './changelog';
-import { INTIAL_REALEASE_TYPE, PKG_NAME } from './constants';
+import { PKG_NAME } from './constants';
 import { updatePackageVersions } from './package';
 import {
   generateNextRelease,
-  initializeRelease,
+  initializeRelease as generateContexts,
   releasePackage,
 } from './release';
 import { createTag, pushTags } from './tags';
-import { Configuration, PackageContext, ReleaseType } from './types';
+import { Configuration, PackageContext } from './types';
 import {
-  applyUpdatesToDependents,
   git,
   hijackSemanticRelease,
   promisifyPlugin,
-  trackUpdates,
   transformPlugins,
 } from './utils';
 
 const RELEASE_ASSETS = ['**/package.json', 'CHANGELOG.md'];
 const DEFAULT_CONFIG: Configuration = {
-  branch: 'master',
   githubRepository: null,
   initial: false,
   npmRegistry: 'https://registry.npmjs.org/',
+};
+const DEFAULT_RELEASE_CONFIG: Configuration = {
+  ...DEFAULT_CONFIG,
+  branch: 'master',
   releaseAssets: [],
 };
 
-export default async (userConfig: Configuration) => {
+export async function releasePackages(
+  userConfig: Configuration
+): Promise<void> {
   const config = {
-    ...DEFAULT_CONFIG,
+    ...DEFAULT_RELEASE_CONFIG,
     ...userConfig,
   };
+
   const gitReleaseConfig: GitRelease.Config = {
     assets: [],
   };
 
-  const cwd = process.cwd();
+  const githubReleaseConfig: GithubRelease.Config = {
+    assets: config.releaseAssets,
+    failComment: false,
+    labels: [PKG_NAME],
+    releasedLabels: ['released'],
+    successComment: false,
+  };
 
   try {
-    const packages = await getPackages();
-    const graph = new PackageGraph(packages);
-    const packageNames = Array.from(graph.keys());
+    const {
+      cwd,
+      graph,
+      packageContexts,
+      packageNames,
+      rootContext,
+    } = await initialize(config, async context => {
+      if (!config.dryRun) {
+        await GitRelease.verifyConditions(gitReleaseConfig, context);
+        await GithubRelease.verifyConditions(githubReleaseConfig, context);
+      }
+    });
 
-    const hijackedContext = await hijackSemanticRelease(config);
-    hijackedContext.logger.success('semantic release context hijacked');
-
-    const rootContext = transformPlugins(hijackedContext, () => [
-      '@semantic-release/commit-analyzer',
-      '@semantic-release/release-notes-generator',
-    ]);
     const githubUrl =
       config.githubRepository || rootContext.options.repositoryUrl;
 
-    const githubReleaseConfig: GithubRelease.Config = {
-      assets: config.releaseAssets,
-      failComment: false,
-      labels: [PKG_NAME],
-      releasedLabels: ['released'],
-      successComment: false,
-    };
-
-    const packageContexts = new Map<string, PackageContext>();
-
-    rootContext.logger.await('verifying packages');
-
-    if (!config.dryRun) {
-      await GitRelease.verifyConditions(gitReleaseConfig, rootContext);
-      await GithubRelease.verifyConditions(githubReleaseConfig, rootContext);
-    }
-
-    for (const pkgName of packageNames) {
-      await initializeRelease(
-        pkgName,
-        cwd,
-        graph.get(pkgName).location,
-        rootContext,
-        packageContexts
-      );
-    }
-    rootContext.logger.complete('packages verified');
-
     await npmSetAuth(config.npmRegistry, rootContext);
 
-    const packageUpdates = new Map<string, ReleaseType>();
-
-    rootContext.logger.await('looking for updates');
-
-    await Promise.all(
-      packageNames.map(pkgName =>
-        trackUpdates(pkgName, packageContexts, packageUpdates)
-      )
-    );
-
-    Array.from(packageUpdates.keys()).forEach(pkgName =>
-      applyUpdatesToDependents(pkgName, graph, packageUpdates)
-    );
-
-    if (config.initial) {
+    const packageUpdates = await analyzeCommits(
+      config,
+      rootContext,
+      packageContexts,
+      graph,
       packageNames
-        .filter(pkgName => !packageUpdates.has(pkgName))
-        .forEach(pkgName => packageUpdates.set(pkgName, INTIAL_REALEASE_TYPE));
-    }
+    );
 
     const updatedNames = Array.from(packageUpdates.keys());
     if (!updatedNames.length) {
@@ -218,4 +192,77 @@ export default async (userConfig: Configuration) => {
 
     process.exit(-1);
   }
-};
+}
+
+export async function analyzePackages(
+  userConfig: Configuration
+): Promise<void> {
+  const config = {
+    ...DEFAULT_CONFIG,
+    ...userConfig,
+  };
+
+  const {
+    graph,
+    packageContexts,
+    packageNames,
+    rootContext,
+  } = await initialize(config, async () => {});
+
+  const packageUpdates = await analyzeCommits(
+    config,
+    rootContext,
+    packageContexts,
+    graph,
+    packageNames
+  );
+}
+
+export async function initialize(
+  config: Configuration,
+  verifyContext: (context: SemanticRelease.Context) => Promise<void>
+): Promise<{
+  readonly cwd: string;
+  readonly graph: PackageGraph;
+  readonly packageContexts: Map<string, PackageContext>;
+  readonly packageNames: string[];
+  readonly rootContext: SemanticRelease.Context;
+}> {
+  const cwd = process.cwd();
+
+  const packages = await getPackages();
+  const graph = new PackageGraph(packages);
+  const packageNames = Array.from(graph.keys());
+
+  const hijackedContext = await hijackSemanticRelease(config);
+  hijackedContext.logger.success('semantic release context hijacked');
+
+  const rootContext = transformPlugins(hijackedContext, () => [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+  ]);
+
+  const packageContexts = new Map<string, PackageContext>();
+
+  rootContext.logger.await('verifying packages');
+  await verifyContext(rootContext);
+
+  for (const pkgName of packageNames) {
+    await generateContexts(
+      pkgName,
+      cwd,
+      graph.get(pkgName).location,
+      rootContext,
+      packageContexts
+    );
+  }
+  rootContext.logger.complete('packages verified');
+
+  return {
+    cwd,
+    graph,
+    packageContexts,
+    packageNames,
+    rootContext,
+  };
+}
