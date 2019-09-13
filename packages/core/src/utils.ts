@@ -20,7 +20,7 @@ import {
   ReleaseType,
 } from './types';
 
-const AFFECTED_PKGS_REGEX = /\baffects: ([^, ]*(?:,[\r\n ][^, ]*)*)/m;
+const AFFECTED_PKGS_REGEX = /^affects: ([^, ]*(?:,[\r\n ][^, ]*)*)$/m;
 export const SEMVER_TYPES: ReleaseType[] = [
   'major',
   'premajor',
