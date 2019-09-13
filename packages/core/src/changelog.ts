@@ -6,9 +6,10 @@ import { PackageContext } from './types';
 
 const SEMANTIC_COMMIT_PATTERN = /^(\w+)(?:\(([^)]*)\))?:\s*(.*)$/;
 const COMMENT_INJECTION_POINT = '<!-- INJECT CHANGELOG HERE -->';
-// const BREAKING_CHANGE = 'BREAKING CHANGE';
+const BREAKING_CHANGE_PATTERN = /^BREAKING CHANGE:[\r\n]+(.*)$/m;
 
 enum CommitType {
+  BREAKING_CHANGE = 'breakingChange',
   FEATURE = 'feat',
   FIX = 'fix',
   DOCS = 'docs',
@@ -19,6 +20,7 @@ enum CommitType {
 }
 
 const VISIBLE_TYPES = [
+  CommitType.BREAKING_CHANGE,
   CommitType.FEATURE,
   CommitType.FIX,
   CommitType.DEPENDENCIES,
@@ -32,7 +34,12 @@ const HIDDEN_TYPES = [
 const ALL_TYPES = [...VISIBLE_TYPES, ...HIDDEN_TYPES];
 
 const ROCKET_EMOJI = ':rocket:';
+const WARNING_EMOJI = ':warning:';
 const COMMITS = {
+  [CommitType.BREAKING_CHANGE]: {
+    emoji: ':boom:',
+    title: 'Breaking Changes',
+  },
   [CommitType.FEATURE]: {
     emoji: ':sparkles:',
     title: 'New Features',
@@ -128,25 +135,37 @@ export async function generateChangelog(
         : []
     );
     context.commits.forEach(commit => {
-      const [, type, scope, subject] = commit.subject.match(
-        SEMANTIC_COMMIT_PATTERN
-      );
+      const semanticCommit = commit.subject.match(SEMANTIC_COMMIT_PATTERN) as [
+        string,
+        CommitType,
+        string,
+        string
+      ];
 
-      if (
-        type &&
-        ALL_TYPES.includes(type as CommitType) &&
-        (scope || subject)
-      ) {
-        changelogEntries.set(type as CommitType, [
-          ...(changelogEntries.get(type as CommitType) || []),
-          `${
-            scope
-              ? `**${scope}**${subject ? `: ${subject}` : ''}`
-              : subject || ''
-          } ([${commit.hash.slice(0, 8)}](${repositoryUrl}/commit/${
-            commit.hash
-          }))`,
-        ]);
+      if (semanticCommit) {
+        const [, type, scope, subject] = semanticCommit;
+
+        const breakingChange = commit.message.match(BREAKING_CHANGE_PATTERN);
+        if (breakingChange) {
+          const [, changeDetails] = breakingChange;
+          changelogEntries.set(CommitType.BREAKING_CHANGE, [
+            ...(changelogEntries.get(CommitType.BREAKING_CHANGE) || []),
+            `${WARNING_EMOJI} **${changeDetails}** ${WARNING_EMOJI}`,
+          ]);
+        }
+
+        if (type && ALL_TYPES.includes(type) && (scope || subject)) {
+          changelogEntries.set(type, [
+            ...(changelogEntries.get(type) || []),
+            `${
+              scope
+                ? `**${scope}**${subject ? `: ${subject}` : ''}`
+                : subject || ''
+            } ([${commit.hash.slice(0, 8)}](${repositoryUrl}/commit/${
+              commit.hash
+            }))`,
+          ]);
+        }
       }
     });
 
@@ -191,7 +210,7 @@ function addEntriesToChangelog(
 
   if (entries) {
     const { emoji, title } = COMMITS[type];
-    changelog += `\n#### ${emoji} ${title}\n`;
+    changelog += `\n\n#### ${emoji} ${title}\n`;
     entries.forEach(entry => {
       changelog += `\n- ${entry}`;
     });
