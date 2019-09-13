@@ -9,7 +9,7 @@
 
 #### :sparkles: New Features
 
-- **release**: force release for unreleased features ([d989aab6](https://github.com/effervescentia/iolaus/commit/d989aab685df1bf060745fcf0e98e03ba9fd0da4))
+- **changelog:** add breaking changes message to changelog ([d989aab6](https://github.com/effervescentia/iolaus/commit/d989aab685df1bf060745fcf0e98e03ba9fd0da4))
 
 ### `iolaus`
 
