@@ -190,7 +190,10 @@ export async function generateChangelog(
   };
 }
 
-function generatePackageEntry(changelogEntries: Map<CommitType, string[]>) {
+function generatePackageEntry(
+  changelogEntries: Map<CommitType, string[]>
+): string {
+  // tslint:disable-next-line: no-let
   let packageEntry = '';
 
   VISIBLE_TYPES.forEach(type => {
