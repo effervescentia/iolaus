@@ -87,14 +87,13 @@ export async function generateChangelog(
   repositoryUrl: string,
   graph: PackageGraph,
   pkgContexts: Map<string, PackageContext>,
-  updatedPkgs: string[]
+  updatedPkgs: string[],
+  publishablePackages: string[]
 ): Promise<{ readonly file: string; readonly content: string }> {
   const date = new Date();
   const changelogFile = path.join(directory, 'CHANGELOG.md');
   // tslint:disable-next-line: no-let
-  let nextChangelogEntry = '';
-
-  nextChangelogEntry += `\n\n## ${updatedPkgs
+  let nextChangelogEntry = `\n\n## ${publishablePackages
     .map(pkgName => {
       const gitTag = pkgContexts.get(pkgName).context.nextRelease.gitTag;
 
@@ -105,20 +104,15 @@ export async function generateChangelog(
 
   updatedPkgs.forEach(pkgName => {
     const { context } = pkgContexts.get(pkgName);
+    const canPublish = publishablePackages.includes(pkgName);
 
-    nextChangelogEntry += `\n\n### \`${pkgName}\`\n`;
-
-    if (!context.lastRelease.version) {
-      nextChangelogEntry += `\n${ROCKET_EMOJI} **Initial Release** ${ROCKET_EMOJI}`;
-    }
-
-    const updatedDependencies = Array.from(
-      graph.get(pkgName).localDependencies.keys()
-    ).filter(
-      depName =>
-        updatedPkgs.includes(depName) &&
-        pkgContexts.get(depName).context.lastRelease.version
-    );
+    const updatedDependencies = canPublish
+      ? Array.from(graph.get(pkgName).localDependencies.keys()).filter(
+          depName =>
+            updatedPkgs.includes(depName) &&
+            pkgContexts.get(depName).context.lastRelease.version
+        )
+      : [];
 
     const changelogEntries = new Map<CommitType, string[]>(
       updatedDependencies.length
@@ -169,19 +163,15 @@ export async function generateChangelog(
       }
     });
 
-    VISIBLE_TYPES.forEach(type => {
-      nextChangelogEntry += addEntriesToChangelog(changelogEntries, type);
-    });
+    const packageEntry = generatePackageEntry(changelogEntries);
+    if (packageEntry !== '') {
+      nextChangelogEntry += `\n\n### \`${pkgName}\`\n`;
 
-    if (HIDDEN_TYPES.some(type => changelogEntries.has(type))) {
-      nextChangelogEntry +=
-        '\n\n<details><summary>Additional Details</summary><p>\n';
+      if (canPublish && !context.lastRelease.version) {
+        nextChangelogEntry += `\n${ROCKET_EMOJI} **Initial Release** ${ROCKET_EMOJI}`;
+      }
 
-      HIDDEN_TYPES.forEach(type => {
-        nextChangelogEntry += addEntriesToChangelog(changelogEntries, type);
-      });
-
-      nextChangelogEntry += '\n\n</p></details>';
+      nextChangelogEntry += packageEntry;
     }
   });
 
@@ -200,21 +190,39 @@ export async function generateChangelog(
   };
 }
 
-function addEntriesToChangelog(
+function generatePackageEntry(changelogEntries: Map<CommitType, string[]>) {
+  let packageEntry = '';
+
+  VISIBLE_TYPES.forEach(type => {
+    packageEntry += generateCommitEntry(changelogEntries, type);
+  });
+
+  if (HIDDEN_TYPES.some(type => changelogEntries.has(type))) {
+    packageEntry += '\n\n<details><summary>Additional Details</summary><p>\n';
+    HIDDEN_TYPES.forEach(type => {
+      packageEntry += generateCommitEntry(changelogEntries, type);
+    });
+    packageEntry += '\n\n</p></details>';
+  }
+
+  return packageEntry;
+}
+
+function generateCommitEntry(
   changelogEntries: Map<CommitType, string[]>,
   type: CommitType
 ): string {
   const entries = changelogEntries.get(type);
   // tslint:disable-next-line: no-let
-  let changelog = '';
+  let commitEntry = '';
 
   if (entries) {
     const { emoji, title } = COMMITS[type];
-    changelog += `\n\n#### ${emoji} ${title}\n`;
+    commitEntry += `\n\n#### ${emoji} ${title}\n`;
     entries.forEach(entry => {
-      changelog += `\n- ${entry}`;
+      commitEntry += `\n- ${entry}`;
     });
   }
 
-  return changelog;
+  return commitEntry;
 }

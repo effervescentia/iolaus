@@ -130,22 +130,22 @@ export default async (userConfig: Configuration) => {
       )
     );
 
+    const publishablePackages = updatedNames.filter(
+      name => !graph.get(name).pkg.private
+    );
     const repositoryUrl = githubUrl.replace(/\.git$/, '');
     const { file: changelogFile, content: changelog } = await generateChangelog(
       cwd,
       repositoryUrl,
       graph,
       packageContexts,
-      updatedNames
+      updatedNames,
+      publishablePackages
     );
 
     await fs.promises.writeFile(changelogFile, changelog);
 
     await promisifyPlugin('prepare', updatedNames, packageContexts);
-
-    const publishablePackages = updatedNames.filter(
-      name => !graph.get(name).pkg.private
-    );
 
     if (config.dryRun) {
       rootContext.logger.warn(
