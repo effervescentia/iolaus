@@ -2,12 +2,12 @@
   "name": "iolaus",
   "description": "An opinionated semantic versioning system for lerna.",
   "keywords": [],
-  "version": "1.6.0",
+  "version": "1.7.0",
   "license": "MIT",
   "repository": "https://github.com/effervescentia/iolaus.git",
   "bin": "index.js",
   "dependencies": {
-    "@iolaus/core": "1.6.0",
+    "@iolaus/core": "1.7.0",
     "commander": "^2.20.0",
     "cosmiconfig": "^5.2.1",
     "read-pkg": "^5.1.1"

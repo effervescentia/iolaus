@@ -2,6 +2,22 @@
 
 <!-- INJECT CHANGELOG HERE -->
 
+## [`@iolaus/core-v1.7.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.7.0), [`iolaus-v1.7.0`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.7.0) (2019-9-25)
+
+### `@iolaus/core`
+
+
+#### :sparkles: New Features
+
+- **private pkgs**: do not add dependency update, release or tags (#15) ([241136f0](https://github.com/effervescentia/iolaus/commit/241136f07be3e5366885be8eb4c0576b60ab584f))
+
+### `iolaus`
+
+
+#### :link: Dependency Updates
+
+- **automatic**: upgrade `@iolaus/core` from `v1.6.0` -> `v1.7.0`
+
 ## [`@iolaus/core-v1.6.0`](https://github.com/effervescentia/iolaus/releases/tag/@iolaus/core-v1.6.0), [`iolaus-v1.6.0`](https://github.com/effervescentia/iolaus/releases/tag/iolaus-v1.6.0) (2019-9-13)
 
 ### `@iolaus/core`
